@@ -8,9 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "sync:assets": "node scripts/sync-assets.mjs",
-    "sync:data": "node scripts/sync-data.mjs"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "next": "latest",

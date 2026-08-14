@@ -1,19 +1,23 @@
-# Allocation Next.js migration
+# Allocation
 
-This folder is the maintainable TypeScript replacement for the original inline-HTML application. The original app remains available in `../static-version` as a behavior and visual reference while migration is in progress.
+This is the maintainable Next.js apartment allocation application.
 
 ## First-time setup
 
 ```powershell
 npm install
-npm run sync:data
-npm run sync:assets
 npm run dev
 ```
 
-The asset command creates local links into `../static-version`. It does not copy the 367 MB model and texture library. Before deploying independently, replace those links with copied files or move the assets to object storage/CDN URLs.
+Application data lives in `data`, and browser-served models, plans, textures, decoders, and brand assets live in `public`. There is no build-time dependency on a legacy application or an external filesystem path.
 
-## Current migration status
+## Vercel deployment
+
+Commit `public` to the repository so Vercel receives the complete model and texture library. Use Vercel's normal Next.js preset with the repository root as the Root Directory and `npm run build` as the Build Command.
+
+The generated static files total roughly 370 MB. This exceeds Vercel's Hobby static-file limit and requires a Pro project when the complete asset library is bundled with the deployment.
+
+## Current features
 
 - Typed apartment, model-asset, and floor-plan-label contracts
 - Shared floor-plan viewer used by the homepage and unit pages
@@ -25,8 +29,6 @@ The asset command creates local links into `../static-version`. It does not copy
 - Readable Three.js unit viewer with explicit lifecycle and cleanup
 - Existing 3D assets, texture mappings, camera fit, and maximum zoom-out opening state
 
-The remaining migration work is refinement and parity testing of smaller interactions rather than a missing page-level feature.
-
 ## Where behavior lives
 
 - `lib/data.ts`: data access and unit availability rules
@@ -37,5 +39,3 @@ The remaining migration work is refinement and parity testing of smaller interac
 - `components/home/`: explorer state, filters, ranges, and synchronized results
 - `lib/three/building-materials.ts`: production KTX2 building materials
 - `components/units/`: unit details workspace
-
-Run `npm run sync:data` whenever the source JSON files change.
