@@ -20,6 +20,23 @@ async function verify(viewport, output) {
   const box = await canvas.boundingBox();
   if (!box) throw new Error("Unit model canvas is missing.");
   await page.screenshot({ path: output.replace(".png", "-entry.png") });
+  let floorTarget = null;
+  for (let yStep = 3; yStep <= 9 && !floorTarget; yStep += 1) {
+    for (let xStep = 1; xStep <= 9; xStep += 1) {
+      const x = box.x + (box.width * xStep) / 10;
+      const y = box.y + (box.height * yStep) / 10;
+      await page.mouse.move(x, y);
+      if ((await canvas.evaluate((element) => element.style.cursor)) === "pointer") {
+        floorTarget = { x, y };
+        break;
+      }
+    }
+  }
+  if (floorTarget) {
+    await page.screenshot({ path: output.replace(".png", "-floor-target.png") });
+    await page.mouse.click(floorTarget.x, floorTarget.y);
+    await page.waitForTimeout(1200);
+  }
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width * 0.66, box.y + box.height * 0.43, { steps: 8 });
@@ -33,6 +50,8 @@ async function verify(viewport, output) {
     active: await page.locator(".unit-model.is-tour-active").count(),
     exitButton: await page.getByRole("button", { name: "Back to 3D model" }).count(),
     movementButtons: await page.locator(".tour-movement button").count(),
+    floorTargetFound: Boolean(floorTarget),
+    floorTarget: floorTarget ? { x: Math.round(floorTarget.x - box.x), y: Math.round(floorTarget.y - box.y) } : null,
     canvas: { width: Math.round(box.width), height: Math.round(box.height) },
     errors,
   };

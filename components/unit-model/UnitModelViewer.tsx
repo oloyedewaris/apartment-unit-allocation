@@ -175,7 +175,9 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
 
     const pressed = new Set<string>();
     const collisionMeshes: THREE.Mesh[] = [];
+    const walkSurfaceMeshes: THREE.Mesh[] = [];
     const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
     const clock = new THREE.Clock();
     const overviewPosition = new THREE.Vector3();
     const overviewTarget = new THREE.Vector3();
@@ -183,12 +185,28 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
     const tourLookTarget = new THREE.Vector3();
     const modelCenter = new THREE.Vector3();
     const modelBounds = new THREE.Box3();
+    const destinationRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.21, 0.3, 48),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, side: THREE.DoubleSide, depthTest: false, depthWrite: false, toneMapped: false }),
+    );
+    destinationRing.rotation.x = -Math.PI / 2;
+    destinationRing.renderOrder = 20;
+    destinationRing.visible = false;
+    scene.add(destinationRing);
     let tourEnabled = false;
     let yaw = 0;
     let pitch = 0;
     let dragging = false;
+    let pointerMoved = false;
     let pointerX = 0;
     let pointerY = 0;
+    let pointerDownX = 0;
+    let pointerDownY = 0;
+    let traveling = false;
+    let travelStartedAt = 0;
+    let travelDuration = 0;
+    const travelFrom = new THREE.Vector3();
+    const travelTo = new THREE.Vector3();
 
     const updateTourRotation = () => {
       camera.rotation.order = "YXZ";
@@ -209,6 +227,8 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
       const direction = keyDirection(event.key);
       if (!direction) return;
       event.preventDefault();
+      traveling = false;
+      destinationRing.visible = false;
       pressed.add(direction);
     };
     const onKeyUp = (event: KeyboardEvent) => {
@@ -218,12 +238,42 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
     const onPointerDown = (event: PointerEvent) => {
       if (!tourEnabled) return;
       dragging = true;
+      pointerMoved = false;
       pointerX = event.clientX;
       pointerY = event.clientY;
+      pointerDownX = event.clientX;
+      pointerDownY = event.clientY;
       renderer.domElement.setPointerCapture(event.pointerId);
     };
+    const floorPointAt = (event: PointerEvent) => {
+      const bounds = renderer.domElement.getBoundingClientRect();
+      pointer.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
+      raycaster.setFromCamera(pointer, camera);
+      const normalMatrix = new THREE.Matrix3();
+      const hit = raycaster.intersectObjects(walkSurfaceMeshes, false)[0];
+      if (!hit?.face) return undefined;
+      normalMatrix.getNormalMatrix(hit.object.matrixWorld);
+      const normal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+      const namedFloor = /(floor|tiles)/i.test(hit.object.name);
+      const nearFloorLevel = hit.point.y <= modelBounds.min.y + 0.35;
+      return normal.y > 0.65 && (namedFloor || nearFloorLevel) ? hit.point : undefined;
+    };
+    const updateFloorDestination = (event: PointerEvent) => {
+      const point = floorPointAt(event);
+      destinationRing.visible = Boolean(point);
+      renderer.domElement.style.cursor = point ? "pointer" : "grab";
+      if (point) destinationRing.position.set(point.x, point.y + 0.018, point.z);
+      return point;
+    };
     const onPointerMove = (event: PointerEvent) => {
-      if (!tourEnabled || !dragging) return;
+      if (!tourEnabled) return;
+      if (!dragging) {
+        updateFloorDestination(event);
+        return;
+      }
+      if (Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY) > 5) pointerMoved = true;
+      destinationRing.visible = false;
+      renderer.domElement.style.cursor = "grabbing";
       yaw -= (event.clientX - pointerX) * 0.004;
       pitch -= (event.clientY - pointerY) * 0.003;
       pitch = THREE.MathUtils.clamp(pitch, -Math.PI * 0.47, Math.PI * 0.47);
@@ -232,8 +282,30 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
       updateTourRotation();
     };
     const onPointerUp = (event: PointerEvent) => {
+      const shouldTravel = tourEnabled && !pointerMoved && event.button === 0;
       dragging = false;
       if (renderer.domElement.hasPointerCapture(event.pointerId)) renderer.domElement.releasePointerCapture(event.pointerId);
+      if (!shouldTravel) {
+        updateFloorDestination(event);
+        return;
+      }
+      const point = updateFloorDestination(event);
+      if (!point) return;
+      pressed.clear();
+      travelFrom.copy(camera.position);
+      travelTo.set(
+        THREE.MathUtils.lerp(travelFrom.x, point.x, 0.8),
+        point.y + 1.62,
+        THREE.MathUtils.lerp(travelFrom.z, point.z, 0.8),
+      );
+      const distance = travelFrom.distanceTo(travelTo);
+      if (distance < 0.25) return;
+      travelDuration = THREE.MathUtils.clamp(distance / 3, 0.38, 1.05) * 1000;
+      travelStartedAt = performance.now();
+      traveling = true;
+    };
+    const onPointerLeave = () => {
+      if (!dragging) destinationRing.visible = false;
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -242,6 +314,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
     renderer.domElement.addEventListener("pointermove", onPointerMove);
     renderer.domElement.addEventListener("pointerup", onPointerUp);
     renderer.domElement.addEventListener("pointercancel", onPointerUp);
+    renderer.domElement.addEventListener("pointerleave", onPointerLeave);
 
     const resize = () => {
       const width = container.clientWidth;
@@ -288,6 +361,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
             object.visible = false;
             return;
           }
+          walkSurfaceMeshes.push(object);
           if (/_collide/i.test(object.name) && !/(floor|tiles|aptglaz)/i.test(object.name)) collisionMeshes.push(object);
           if (atlas) {
             if (/aptglaz/i.test(object.name)) object.material = fallbackMaterial("glass");
@@ -324,6 +398,8 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
           overviewTarget.copy(controls.target);
           controls.enabled = false;
           tourEnabled = true;
+          traveling = false;
+          destinationRing.visible = false;
           pressed.clear();
           camera.fov = 68;
           camera.near = 0.04;
@@ -338,7 +414,10 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
         };
         leaveTour.current = () => {
           tourEnabled = false;
+          traveling = false;
           dragging = false;
+          destinationRing.visible = false;
+          renderer.domElement.style.cursor = "grab";
           pressed.clear();
           camera.fov = 24;
           camera.near = 0.05;
@@ -363,6 +442,15 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
     renderer.setAnimationLoop(() => {
       const delta = Math.min(clock.getDelta(), 0.05);
       if (tourEnabled) {
+        if (traveling) {
+          const progress = THREE.MathUtils.clamp((performance.now() - travelStartedAt) / travelDuration, 0, 1);
+          const eased = progress * progress * (3 - 2 * progress);
+          camera.position.lerpVectors(travelFrom, travelTo, eased);
+          if (progress >= 1) {
+            traveling = false;
+            destinationRing.visible = false;
+          }
+        }
         const forwardAmount = Number(pressed.has("forward")) - Number(pressed.has("backward"));
         const rightAmount = Number(pressed.has("right")) - Number(pressed.has("left"));
         if (forwardAmount || rightAmount) {
@@ -393,6 +481,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
       renderer.domElement.removeEventListener("pointermove", onPointerMove);
       renderer.domElement.removeEventListener("pointerup", onPointerUp);
       renderer.domElement.removeEventListener("pointercancel", onPointerUp);
+      renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
       controls.dispose();
       scene.traverse((object) => {
         if (!(object instanceof THREE.Mesh)) return;
