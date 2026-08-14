@@ -109,6 +109,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
     async function initialize() {
       const loadedMaterials = await loadBuildingMaterials(renderer);
       materialLibrary = loadedMaterials;
+      scene.environment = loadedMaterials.environment;
       const draco = new DRACOLoader().setDecoderPath("/vendor/draco/");
       const root = (await new GLTFLoader().setDRACOLoader(draco).loadAsync("/volta-skai.glb")).scene;
       if (disposed) return;

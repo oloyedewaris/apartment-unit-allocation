@@ -28,7 +28,15 @@ export function buildingTextureKey(meshName: string) {
 function fallbackMaterial(meshName: string) {
   const name = meshName.toLowerCase();
   if (name.includes("glass") || name.includes("glaz")) {
-    return new THREE.MeshPhysicalMaterial({ color: 0x91a9bf, transparent: true, opacity: 0.46, roughness: 0.08, depthWrite: false });
+    return new THREE.MeshPhysicalMaterial({
+      color: 0x91a9bf,
+      transparent: true,
+      opacity: 0.46,
+      roughness: 0.08,
+      metalness: 0.04,
+      depthWrite: false,
+      envMapIntensity: 1.25,
+    });
   }
   if (name.includes("frame")) return new THREE.MeshBasicMaterial({ color: 0x202220, toneMapped: false });
   const color = name.includes("tree") || name.includes("bush") ? 0x566a3b : name.includes("road") ? 0x292a2b : 0x30312f;
@@ -74,8 +82,12 @@ export async function loadBuildingMaterials(renderer: THREE.WebGLRenderer) {
   }
   const shadow = textures.get("shadowa");
   if (shadow) materials.set("shadowa", new THREE.MeshBasicMaterial({ color: 0x241f1c, alphaMap: shadow, transparent: true, opacity: 0.5, depthWrite: false, toneMapped: false }));
+  const environment = await new THREE.TextureLoader().loadAsync("/textures/env.jpg");
+  environment.mapping = THREE.EquirectangularReflectionMapping;
+  environment.colorSpace = THREE.SRGBColorSpace;
 
   return {
+    environment,
     materialFor(meshName: string) {
       const key = buildingTextureKey(meshName);
       return (key && materials.get(key)) || fallbackMaterial(meshName);
@@ -83,6 +95,7 @@ export async function loadBuildingMaterials(renderer: THREE.WebGLRenderer) {
     dispose() {
       materials.forEach((material) => material.dispose());
       textures.forEach((texture) => texture.dispose());
+      environment.dispose();
       loader.dispose();
     },
   };
