@@ -11,6 +11,13 @@ function publicAssetPath(path: string) {
   return path.startsWith("./") ? path.slice(1) : path;
 }
 
+function panoramaForFloor(floor: number) {
+  if (floor <= 6) return "/unit-assets/environments/view-20m.webp";
+  if (floor <= 8) return "/unit-assets/environments/view-27m.webp";
+  if (floor <= 10) return "/unit-assets/environments/view-34m.webp";
+  return "/unit-assets/environments/view-42m.webp";
+}
+
 function materialKey(name: string) {
   return name
     .toLowerCase()
@@ -138,7 +145,7 @@ function findWalkableFloorPoint(model: THREE.Object3D, blockers: THREE.Mesh[], f
   return bestPoint;
 }
 
-export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
+export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: number }) {
   const host = useRef<HTMLDivElement>(null);
   const enterTour = useRef<() => void>(() => undefined);
   const leaveTour = useRef<() => void>(() => undefined);
@@ -185,6 +192,8 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
     const tourLookTarget = new THREE.Vector3();
     const modelCenter = new THREE.Vector3();
     const modelBounds = new THREE.Box3();
+    let tourBackdrop: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial> | undefined;
+    let tourPanorama: THREE.Texture | undefined;
     const destinationRing = new THREE.Mesh(
       new THREE.RingGeometry(0.21, 0.3, 48),
       new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, side: THREE.DoubleSide, depthTest: false, depthWrite: false, toneMapped: false }),
@@ -385,6 +394,42 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
         overviewPosition.copy(camera.position);
         overviewTarget.copy(controls.target);
 
+        const panoramaSource = await textureLoader.loadAsync(panoramaForFloor(floor));
+        const panoramaImage = panoramaSource.image as HTMLImageElement;
+        const panoramaCanvas = document.createElement("canvas");
+        panoramaCanvas.width = panoramaImage.naturalWidth || panoramaImage.width;
+        panoramaCanvas.height = Math.floor(
+          (panoramaImage.naturalHeight || panoramaImage.height) * 0.66,
+        );
+        panoramaCanvas
+          .getContext("2d")
+          ?.drawImage(
+            panoramaImage,
+            0,
+            0,
+            panoramaCanvas.width,
+            panoramaCanvas.height,
+            0,
+            0,
+            panoramaCanvas.width,
+            panoramaCanvas.height,
+          );
+        panoramaSource.dispose();
+        tourPanorama = new THREE.CanvasTexture(panoramaCanvas);
+        tourPanorama.colorSpace = THREE.SRGBColorSpace;
+        tourPanorama.wrapS = THREE.RepeatWrapping;
+        tourPanorama.wrapT = THREE.ClampToEdgeWrapping;
+        tourPanorama.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        const backdropRotation = [...asset.model].reduce((total, character) => total + character.charCodeAt(0), 0) % 360;
+        tourBackdrop = new THREE.Mesh(
+          new THREE.CylinderGeometry(60, 60, 30, 96, 1, true),
+          new THREE.MeshBasicMaterial({ map: tourPanorama, side: THREE.BackSide, toneMapped: false }),
+        );
+        tourBackdrop.position.set(modelCenter.x, modelBounds.min.y + 10, modelCenter.z);
+        tourBackdrop.rotation.y = THREE.MathUtils.degToRad(backdropRotation);
+        tourBackdrop.visible = false;
+        scene.add(tourBackdrop);
+
         const markerCenter = walkMarker
           ? new THREE.Box3().setFromObject(walkMarker).getCenter(new THREE.Vector3())
           : findWalkableFloorPoint(model, collisionMeshes, modelCenter);
@@ -400,6 +445,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
           tourEnabled = true;
           traveling = false;
           destinationRing.visible = false;
+          if (tourBackdrop) tourBackdrop.visible = true;
           pressed.clear();
           camera.fov = 68;
           camera.near = 0.04;
@@ -417,6 +463,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
           traveling = false;
           dragging = false;
           destinationRing.visible = false;
+          if (tourBackdrop) tourBackdrop.visible = false;
           renderer.domElement.style.cursor = "grab";
           pressed.clear();
           camera.fov = 24;
@@ -483,6 +530,7 @@ export function UnitModelViewer({ asset }: { asset: UnitAsset }) {
       renderer.domElement.removeEventListener("pointercancel", onPointerUp);
       renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
       controls.dispose();
+      tourPanorama?.dispose();
       scene.traverse((object) => {
         if (!(object instanceof THREE.Mesh)) return;
         object.geometry.dispose();

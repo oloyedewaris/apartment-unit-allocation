@@ -14,7 +14,7 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
         <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>Floor plan</button>
       </nav>
       {view === "model" ? (
-        <UnitModelViewer asset={asset} />
+        <UnitModelViewer asset={asset} floor={Number(unit.floor)} />
       ) : (
         <FloorPlanViewer apartments={apartments} registry={plans} initialFloor={Number(unit.floor)} initialTower={unit.house.identificator} activeUnitNumber={unit.number_num} showControls={false} />
       )}
