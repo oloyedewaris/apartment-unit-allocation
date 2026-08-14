@@ -1,0 +1,10 @@
+.next/
+node_modules/
+public/assets
+public/plans
+public/textures
+public/unit-assets
+public/volta-skai.glb
+public/vendor
+*.tsbuildinfo
+*.log

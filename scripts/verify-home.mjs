@@ -1,0 +1,44 @@
+import { chromium } from "playwright-core";
+
+const browser = await chromium.launch({
+  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  headless: true,
+  args: ["--enable-unsafe-swiftshader"],
+});
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+const errors = [];
+page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+page.on("pageerror", (error) => errors.push(error.message));
+
+await page.goto("http://localhost:3000", { waitUntil: "networkidle", timeout: 120_000 });
+await Promise.race([
+  page.locator(".building-loading").waitFor({ state: "detached", timeout: 120_000 }),
+  page.getByText("The building model could not be loaded.").waitFor({ state: "visible", timeout: 120_000 }),
+]);
+if (await page.getByText("The building model could not be loaded.").isVisible().catch(() => false)) {
+  console.log(JSON.stringify({ errors }, null, 2));
+  await browser.close();
+  process.exit(1);
+}
+await page.screenshot({ path: "verify-model.png" });
+const modelCanvas = await page.locator(".building-viewer canvas").count();
+await page.locator('.result-row[data-number="10"]').dispatchEvent("mouseover");
+await page.waitForTimeout(500);
+const scrollState = await page.evaluate(() => ({
+  page: document.scrollingElement?.scrollTop || 0,
+  list: document.querySelector(".result-rows")?.scrollTop || 0,
+  listHeight: document.querySelector(".result-rows")?.clientHeight || 0,
+  listContentHeight: document.querySelector(".result-rows")?.scrollHeight || 0,
+}));
+await page.getByRole("button", { name: "Floor plans" }).click();
+await page.locator(".floor-plan-board img").waitFor({ state: "visible" });
+await page.screenshot({ path: "verify-plans.png" });
+
+console.log(JSON.stringify({
+  resultCount: await page.locator(".result-row").count(),
+  modelCanvas,
+  floorLabels: await page.locator(".plan-unit-label").count(),
+  scrollState,
+  errors,
+}, null, 2));
+await browser.close();
