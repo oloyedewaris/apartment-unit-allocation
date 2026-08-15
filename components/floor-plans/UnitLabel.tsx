@@ -10,9 +10,10 @@ interface UnitLabelProps {
   viewHeight: number;
   active: boolean;
   scale?: number;
+  onHover?: (unitNumber: string | null) => void;
 }
 
-export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 1 }: UnitLabelProps) {
+export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 1, onHover }: UnitLabelProps) {
   const available = canOpenUnit(unit);
   const x = label.x - (label.width * (scale - 1)) / 2;
   const y = label.y - (label.height * (scale - 1)) / 2;
@@ -41,11 +42,24 @@ export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 
   );
 
   return available ? (
-    <Link className={className} style={style} href={`/units/${unit.number_num}`}>
+    <Link
+      className={className}
+      style={style}
+      href={`/units/${unit.number_num}`}
+      onPointerEnter={() => onHover?.(String(Number(unit.number_num)))}
+      onPointerLeave={() => onHover?.(null)}
+      onFocus={() => onHover?.(String(Number(unit.number_num)))}
+      onBlur={() => onHover?.(null)}
+    >
       {content}
     </Link>
   ) : (
-    <div className={className} style={style}>
+    <div
+      className={className}
+      style={style}
+      onPointerEnter={() => onHover?.(String(Number(unit.number_num)))}
+      onPointerLeave={() => onHover?.(null)}
+    >
       {content}
     </div>
   );

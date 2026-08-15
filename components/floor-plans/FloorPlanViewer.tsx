@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { canOpenUnit } from "@/lib/data";
 import { getPlanOverlay, unitsOnFloor } from "@/lib/floor-plans";
 import type { Apartment, PlanRegistry } from "@/lib/types";
+import { InteractivePlanSvg } from "./InteractivePlanSvg";
 import { UnitLabel } from "./UnitLabel";
 
 interface FloorPlanViewerProps {
@@ -15,17 +18,55 @@ interface FloorPlanViewerProps {
 }
 
 export function FloorPlanViewer({ apartments, registry, initialFloor = 1, initialTower = "A", activeUnitNumber, showControls = true }: FloorPlanViewerProps) {
+  const router = useRouter();
   const [floor, setFloor] = useState(initialFloor);
   const [tower, setTower] = useState<"A" | "B">(initialTower);
+  const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
   const floorUnits = useMemo(() => unitsOnFloor(apartments, floor, tower), [apartments, floor, tower]);
   const overlay = useMemo(() => getPlanOverlay(registry, apartments, floor, tower), [registry, apartments, floor, tower]);
+  const regionMap = useMemo(() => {
+    if (floor === 12) {
+      const targetUnits = [...overlay.labels].sort((left, right) => Number(left.unit) - Number(right.unit));
+      return Object.fromEntries(
+        ["76", "77", "78"].flatMap((sourceUnit, index) =>
+          targetUnits[index] ? [[sourceUnit, String(Number(targetUnits[index].unit))]] : [],
+        ),
+      );
+    }
+
+    const sourceFloor = floor >= 6 && floor <= 9 ? 6 : floor;
+    const sourceOverlay = registry[String(sourceFloor)]?.[tower] || overlay;
+    const unusedLabels = [...sourceOverlay.labels];
+
+    return Object.fromEntries(
+      overlay.labels.map((target) => {
+        const source = unusedLabels.reduce((closest, candidate) => {
+          const distance = Math.hypot(candidate.x - target.x, candidate.y - target.y);
+          const closestDistance = Math.hypot(closest.x - target.x, closest.y - target.y);
+          return distance < closestDistance ? candidate : closest;
+        }, unusedLabels[0] || target);
+        unusedLabels.splice(unusedLabels.indexOf(source), 1);
+        return [String(Number(source.unit)), String(Number(target.unit))];
+      }),
+    );
+  }, [floor, overlay, registry, tower]);
+  const planSource = floor >= 4 && floor <= 11 ? `/plans/towers/floor-${tower}-${floor}.svg` : `/plans/floor-${floor}.svg`;
   const [, , viewWidth, viewHeight] = overlay.viewBox;
 
   return (
     <section className="floor-plan-viewer">
       <div className="floor-plan-board" style={{ aspectRatio: `${viewWidth} / ${viewHeight}` }}>
         {/* The SVG and labels share the production viewBox, so percentages stay aligned. */}
-        <img src={`/plans/floor-${floor}.svg`} alt={`Floor ${floor} plan, tower ${tower}`} />
+        <InteractivePlanSvg
+          src={planSource}
+          regionMap={regionMap}
+          highlightedUnit={hoveredUnit || (activeUnitNumber ? String(Number(activeUnitNumber)) : null)}
+          onUnitHover={setHoveredUnit}
+          onUnitSelect={(unitNumber) => {
+            const unit = floorUnits.find((candidate) => Number(candidate.number_num) === Number(unitNumber));
+            if (unit && canOpenUnit(unit)) router.push(`/units/${unit.number_num}`);
+          }}
+        />
         <div className="plan-label-layer">
           {overlay.labels.map((label) => {
             const unit = floorUnits.find((candidate) => Number(candidate.number_num) === Number(label.unit));
@@ -36,8 +77,9 @@ export function FloorPlanViewer({ apartments, registry, initialFloor = 1, initia
                 label={label}
                 viewWidth={viewWidth}
                 viewHeight={viewHeight}
-                active={Number(unit.number_num) === Number(activeUnitNumber)}
+                active={Number(unit.number_num) === Number(hoveredUnit || activeUnitNumber)}
                 scale={floor === 1 ? 1.2 : 1}
+                onHover={setHoveredUnit}
               />
             ) : null;
           })}
