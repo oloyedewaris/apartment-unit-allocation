@@ -67,10 +67,18 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const current = propsRef.current;
       for (const unit of unitsRef.current) {
         const visible = current.visibleNumbers.has(unit.number);
-        const material = unit.number === current.selectedNumber ? colors.selected
-          : unit.number === current.hoveredNumber ? colors.hover
-          : !visible && current.filtersActive ? colors.filtered : colors.idle;
-        unit.meshes.forEach((mesh) => { mesh.material = material; mesh.renderOrder = material === colors.selected ? 12 : material === colors.hover ? 11 : 3; });
+        const material =
+          unit.number === current.selectedNumber
+            ? colors.selected
+            : unit.number === current.hoveredNumber
+              ? colors.hover
+              : !visible && current.filtersActive
+                ? colors.filtered
+                : colors.idle;
+        unit.meshes.forEach((mesh) => {
+          mesh.material = material;
+          mesh.renderOrder = material === colors.selected ? 12 : material === colors.hover ? 11 : 3;
+        });
       }
     };
 
@@ -96,7 +104,8 @@ export function BuildingViewer(props: BuildingViewerProps) {
     };
 
     const resize = () => {
-      const width = container.clientWidth, height = container.clientHeight;
+      const width = container.clientWidth,
+        height = container.clientHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
@@ -130,10 +139,15 @@ export function BuildingViewer(props: BuildingViewerProps) {
         else object.material = loadedMaterials.materialFor(object.name);
       });
 
-      unitsRef.current = props.apartments.map((unit) => ({ number: String(Number(unit.number_num)), meshes: apartmentMeshes.get(String(Number(unit.number_num))) || [] })).filter((unit) => unit.meshes.length > 0);
+      unitsRef.current = props.apartments
+        .map((unit) => ({ number: String(Number(unit.number_num)), meshes: apartmentMeshes.get(String(Number(unit.number_num))) || [] }))
+        .filter((unit) => unit.meshes.length > 0);
       scene.add(root);
       root.updateWorldMatrix(true, true);
-      const box = new THREE.Box3().setFromObject(root), center = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()), radius = size.length() / 2;
+      const box = new THREE.Box3().setFromObject(root),
+        center = box.getCenter(new THREE.Vector3()),
+        size = box.getSize(new THREE.Vector3()),
+        radius = size.length() / 2;
       controls.target.set(center.x, center.y - size.y * 0.08, center.z);
       const direction = new THREE.Vector3(0.72, 1.48, 1.48).normalize();
       const distance = radius * 3.05;
@@ -153,7 +167,10 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const loading = container.querySelector(".building-loading");
       if (loading) loading.textContent = "The building model could not be loaded.";
     });
-    renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+    renderer.setAnimationLoop(() => {
+      controls.update();
+      renderer.render(scene, camera);
+    });
 
     return () => {
       disposed = true;
@@ -167,5 +184,12 @@ export function BuildingViewer(props: BuildingViewerProps) {
     };
   }, [props.apartments]);
 
-  return <div className="building-viewer" ref={host}><div className="building-loading"><Loader /></div><span className="building-hint">Drag to rotate · scroll to zoom · select an apartment</span></div>;
+  return (
+    <div className="building-viewer" ref={host}>
+      <div className="building-loading">
+        <Loader />
+      </div>
+      <span className="building-hint">Drag to rotate · scroll to zoom · select an apartment</span>
+    </div>
+  );
 }

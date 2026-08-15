@@ -30,7 +30,9 @@ export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 
         <>
           {Number(unit.rooms_count) > 0 && <span>{unit.rooms_count} rooms</span>}
           <span>{formatArea(unit)}</span>
-          <span className="label-price">{unit.discounted_price_raw || unit.price_raw ? `€${Number(unit.discounted_price_raw || unit.price_raw).toLocaleString("en")}` : "Ask price"}</span>
+          <span className="label-price">
+            {unit.discounted_price_raw || unit.price_raw ? `€${Number(unit.discounted_price_raw || unit.price_raw).toLocaleString("en")}` : "Ask price"}
+          </span>
         </>
       ) : (
         <span>{unit.status === "booked" ? "Reserved" : "Sold"}</span>

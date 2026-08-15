@@ -7,17 +7,10 @@ function byNumber<T extends { number_num: string }>(left: T, right: T) {
 }
 
 export function unitsOnFloor(apartments: Apartment[], floor: number, tower: "A" | "B") {
-  return apartments.filter(
-    (unit) => Number(unit.min_floor || unit.floor) === floor && unit.house.identificator === tower,
-  );
+  return apartments.filter((unit) => Number(unit.min_floor || unit.floor) === floor && unit.house.identificator === tower);
 }
 
-export function getPlanOverlay(
-  registry: PlanRegistry,
-  apartments: Apartment[],
-  floor: number,
-  tower: "A" | "B",
-): PlanOverlay {
+export function getPlanOverlay(registry: PlanRegistry, apartments: Apartment[], floor: number, tower: "A" | "B"): PlanOverlay {
   const exactOverlay = registry[String(floor)]?.[tower];
   if (exactOverlay) return exactOverlay;
 

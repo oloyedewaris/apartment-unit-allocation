@@ -14,14 +14,7 @@ interface FloorPlanViewerProps {
   showControls?: boolean;
 }
 
-export function FloorPlanViewer({
-  apartments,
-  registry,
-  initialFloor = 1,
-  initialTower = "A",
-  activeUnitNumber,
-  showControls = true,
-}: FloorPlanViewerProps) {
+export function FloorPlanViewer({ apartments, registry, initialFloor = 1, initialTower = "A", activeUnitNumber, showControls = true }: FloorPlanViewerProps) {
   const [floor, setFloor] = useState(initialFloor);
   const [tower, setTower] = useState<"A" | "B">(initialTower);
   const floorUnits = useMemo(() => unitsOnFloor(apartments, floor, tower), [apartments, floor, tower]);

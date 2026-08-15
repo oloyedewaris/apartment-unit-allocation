@@ -196,7 +196,15 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
     let tourPanorama: THREE.Texture | undefined;
     const destinationRing = new THREE.Mesh(
       new THREE.RingGeometry(0.21, 0.3, 48),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, side: THREE.DoubleSide, depthTest: false, depthWrite: false, toneMapped: false }),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 1,
+        side: THREE.DoubleSide,
+        depthTest: false,
+        depthWrite: false,
+        toneMapped: false,
+      }),
     );
     destinationRing.rotation.x = -Math.PI / 2;
     destinationRing.renderOrder = 20;
@@ -302,11 +310,7 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
       if (!point) return;
       pressed.clear();
       travelFrom.copy(camera.position);
-      travelTo.set(
-        THREE.MathUtils.lerp(travelFrom.x, point.x, 0.8),
-        point.y + 1.62,
-        THREE.MathUtils.lerp(travelFrom.z, point.z, 0.8),
-      );
+      travelTo.set(THREE.MathUtils.lerp(travelFrom.x, point.x, 0.8), point.y + 1.62, THREE.MathUtils.lerp(travelFrom.z, point.z, 0.8));
       const distance = travelFrom.distanceTo(travelTo);
       if (distance < 0.25) return;
       travelDuration = THREE.MathUtils.clamp(distance / 3, 0.38, 1.05) * 1000;
@@ -398,22 +402,10 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
         const panoramaImage = panoramaSource.image as HTMLImageElement;
         const panoramaCanvas = document.createElement("canvas");
         panoramaCanvas.width = panoramaImage.naturalWidth || panoramaImage.width;
-        panoramaCanvas.height = Math.floor(
-          (panoramaImage.naturalHeight || panoramaImage.height) * 0.66,
-        );
+        panoramaCanvas.height = Math.floor((panoramaImage.naturalHeight || panoramaImage.height) * 0.66);
         panoramaCanvas
           .getContext("2d")
-          ?.drawImage(
-            panoramaImage,
-            0,
-            0,
-            panoramaCanvas.width,
-            panoramaCanvas.height,
-            0,
-            0,
-            panoramaCanvas.width,
-            panoramaCanvas.height,
-          );
+          ?.drawImage(panoramaImage, 0, 0, panoramaCanvas.width, panoramaCanvas.height, 0, 0, panoramaCanvas.width, panoramaCanvas.height);
         panoramaSource.dispose();
         tourPanorama = new THREE.CanvasTexture(panoramaCanvas);
         tourPanorama.colorSpace = THREE.SRGBColorSpace;

@@ -10,13 +10,24 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
   return (
     <main className="unit-workspace">
       <nav className="view-tabs" aria-label="Unit view">
-        <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>3D model</button>
-        <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>Floor plan</button>
+        <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>
+          3D model
+        </button>
+        <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>
+          Floor plan
+        </button>
       </nav>
       {view === "model" ? (
         <UnitModelViewer asset={asset} floor={Number(unit.floor)} />
       ) : (
-        <FloorPlanViewer apartments={apartments} registry={plans} initialFloor={Number(unit.floor)} initialTower={unit.house.identificator} activeUnitNumber={unit.number_num} showControls={false} />
+        <FloorPlanViewer
+          apartments={apartments}
+          registry={plans}
+          initialFloor={Number(unit.floor)}
+          initialTower={unit.house.identificator}
+          activeUnitNumber={unit.number_num}
+          showControls={false}
+        />
       )}
     </main>
   );
