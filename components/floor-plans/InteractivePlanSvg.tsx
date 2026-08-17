@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from "@/components/ui/Loader";
 
 interface InteractivePlanSvgProps {
   src: string;
@@ -202,7 +203,9 @@ export function InteractivePlanSvg({
       {markup ? (
         <div className="plan-svg-markup" dangerouslySetInnerHTML={{ __html: markup }} />
       ) : (
-        <div className="loader" aria-label="Loading floor plan" />
+        <div className="plan-loading">
+          <Loader />
+        </div>
       )}
     </div>
   );
