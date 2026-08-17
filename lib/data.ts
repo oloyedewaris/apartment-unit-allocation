@@ -18,3 +18,10 @@ export function findApartment(unitNumber: string): Apartment | undefined {
 export function canOpenUnit(unit: Apartment): boolean {
   return !disabledUnitNumbers.has(String(unit.number_num)) && Boolean(assetRegistry.units[unit.number_num]);
 }
+
+export function sortUnitsByFloorDescending(units: Apartment[]): Apartment[] {
+  return [...units].sort((left, right) => {
+    const floorDifference = Number(right.min_floor || right.floor) - Number(left.min_floor || left.floor);
+    return floorDifference || Number(left.number_num) - Number(right.number_num);
+  });
+}

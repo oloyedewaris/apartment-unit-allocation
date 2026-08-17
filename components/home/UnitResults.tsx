@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { canOpenUnit } from "@/lib/data";
+import { canOpenUnit, sortUnitsByFloorDescending } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import type { Apartment } from "@/lib/types";
 
@@ -30,6 +30,7 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
     else if (rowBottom > visibleBottom) container.scrollTo({ top: rowBottom - container.clientHeight, behavior: "smooth" });
   }, [hoveredNumber]);
   const available = units.filter((unit) => unit.status === "available").length;
+  const sortedUnits = sortUnitsByFloorDescending(units);
   return (
     <aside className="results-sidebar">
       <header>
@@ -56,7 +57,7 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
         <span>Price</span>
       </div>
       <div className="result-rows" ref={rows}>
-        {units.map((unit) => {
+        {sortedUnits.map((unit) => {
           const disabled = !canOpenUnit(unit);
           return (
             <button
