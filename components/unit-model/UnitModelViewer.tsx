@@ -154,7 +154,7 @@ function findWalkableFloorPoint(model: THREE.Object3D, blockers: THREE.Mesh[], f
   return bestPoint;
 }
 
-export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: number }) {
+export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: UnitAsset; floor: number; startInTour?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const enterTour = useRef<() => void>(() => undefined);
   const leaveTour = useRef<() => void>(() => undefined);
@@ -166,6 +166,8 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
     if (!host.current) return;
     const container = host.current;
     let disposed = false;
+    setStatus("loading");
+    setTourActive(false);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -470,6 +472,10 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
           else pressed.delete(direction);
         };
         setStatus("ready");
+        if (startInTour) {
+          enterTour.current();
+          setTourActive(true);
+        }
       } catch (error) {
         console.error("Unable to load unit model", error);
         if (!disposed) setStatus("error");
@@ -531,7 +537,7 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [asset]);
+  }, [asset, startInTour]);
 
   return (
     <div className={`unit-model${tourActive ? " is-tour-active" : ""}`} ref={host}>
