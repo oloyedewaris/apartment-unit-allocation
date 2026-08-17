@@ -12,10 +12,10 @@ function publicAssetPath(path: string) {
 }
 
 function panoramaForFloor(floor: number) {
-  if (floor <= 6) return "/unit-assets/environments/view-20m.webp";
-  if (floor <= 8) return "/unit-assets/environments/view-27m.webp";
-  if (floor <= 10) return "/unit-assets/environments/view-34m.webp";
-  return "/unit-assets/environments/view-42m.webp";
+  if (floor <= 6) return "/unit-assets/environments/view-20m-full.png";
+  if (floor <= 8) return "/unit-assets/environments/view-27m-full.png";
+  if (floor <= 10) return "/unit-assets/environments/view-34m-full.png";
+  return "/unit-assets/environments/view-42m-full.png";
 }
 
 function materialKey(name: string) {
@@ -36,7 +36,16 @@ async function loadTexture(loader: THREE.TextureLoader, path: string, renderer: 
 function fallbackMaterial(name: string) {
   const key = materialKey(name);
   if (/glass|glaz/.test(key)) {
-    return new THREE.MeshPhysicalMaterial({ color: 0xdde9eb, transparent: true, opacity: 0.26, roughness: 0.06, depthWrite: false });
+    return new THREE.MeshPhysicalMaterial({
+      color: 0xf4fbff,
+      transparent: true,
+      opacity: 0.12,
+      roughness: 0.035,
+      reflectivity: 0.35,
+      ior: 1.45,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
   }
   if (/gold|silver|handle|tap|hinge|drain|black/.test(key)) {
     return new THREE.MeshStandardMaterial({ color: /gold/.test(key) ? 0x8b7253 : 0x272725, metalness: 0.72, roughness: 0.25 });
@@ -399,26 +408,16 @@ export function UnitModelViewer({ asset, floor }: { asset: UnitAsset; floor: num
         overviewTarget.copy(controls.target);
 
         const panoramaSource = await textureLoader.loadAsync(panoramaForFloor(floor));
-        const panoramaImage = panoramaSource.image as HTMLImageElement;
-        const panoramaCanvas = document.createElement("canvas");
-        panoramaCanvas.width = panoramaImage.naturalWidth || panoramaImage.width;
-        panoramaCanvas.height = Math.floor((panoramaImage.naturalHeight || panoramaImage.height) * 0.66);
-        panoramaCanvas
-          .getContext("2d")
-          ?.drawImage(panoramaImage, 0, 0, panoramaCanvas.width, panoramaCanvas.height, 0, 0, panoramaCanvas.width, panoramaCanvas.height);
-        panoramaSource.dispose();
-        tourPanorama = new THREE.CanvasTexture(panoramaCanvas);
+        tourPanorama = panoramaSource;
         tourPanorama.colorSpace = THREE.SRGBColorSpace;
         tourPanorama.wrapS = THREE.RepeatWrapping;
         tourPanorama.wrapT = THREE.ClampToEdgeWrapping;
         tourPanorama.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        const backdropRotation = [...asset.model].reduce((total, character) => total + character.charCodeAt(0), 0) % 360;
         tourBackdrop = new THREE.Mesh(
-          new THREE.CylinderGeometry(60, 60, 30, 96, 1, true),
+          new THREE.CylinderGeometry(90, 90, 180, 192, 1, true),
           new THREE.MeshBasicMaterial({ map: tourPanorama, side: THREE.BackSide, toneMapped: false }),
         );
-        tourBackdrop.position.set(modelCenter.x, modelBounds.min.y + 10, modelCenter.z);
-        tourBackdrop.rotation.y = THREE.MathUtils.degToRad(backdropRotation);
+        tourBackdrop.position.set(modelCenter.x, modelBounds.min.y + 1.62, modelCenter.z);
         tourBackdrop.visible = false;
         scene.add(tourBackdrop);
 
