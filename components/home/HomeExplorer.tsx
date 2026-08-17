@@ -74,10 +74,14 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
   const visibleNumbers = useMemo(() => new Set(visibleUnits.map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
   const selectableNumbers = useMemo(() => new Set(visibleUnits.filter(canOpenUnit).map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(createInitialFilters());
+  function openUnit(number: string) {
+    const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(number));
+    if (unit && canOpenUnit(unit)) router.push(`/units/${number}`);
+  }
   function selectUnit(number: string) {
     const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(number));
     if (!unit || !canOpenUnit(unit)) return;
-    if (selectedNumber === number) router.push(`/units/${number}`);
+    if (selectedNumber === number) openUnit(number);
     else setSelectedNumber(number);
   }
 
@@ -110,7 +114,7 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
             hoveredNumber={hoveredNumber ? String(Number(hoveredNumber)) : null}
             selectedNumber={selectedNumber ? String(Number(selectedNumber)) : null}
             onHover={setHoveredNumber}
-            onSelect={selectUnit}
+            onSelect={openUnit}
           />
         ) : (
           <FloorPlanViewer apartments={apartments} registry={plans} />

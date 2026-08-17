@@ -85,6 +85,8 @@ export function BuildingViewer(props: BuildingViewerProps) {
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    let dragStart: { pointerId: number; x: number; y: number } | null = null;
+    let suppressClick = false;
     function pick(event: PointerEvent) {
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
@@ -93,13 +95,31 @@ export function BuildingViewer(props: BuildingViewerProps) {
       return raycaster.intersectObjects(targets, false)[0]?.object.userData.unitNumber as string | undefined;
     }
 
+    renderer.domElement.onpointerdown = (event) => {
+      dragStart = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+      suppressClick = false;
+    };
     renderer.domElement.onpointermove = (event) => {
+      if (dragStart?.pointerId === event.pointerId && Math.hypot(event.clientX - dragStart.x, event.clientY - dragStart.y) > 5) {
+        suppressClick = true;
+      }
       const number = pick(event) || null;
       renderer.domElement.style.cursor = number ? "pointer" : "grab";
       if (number !== propsRef.current.hoveredNumber) propsRef.current.onHover(number);
     };
+    renderer.domElement.onpointerup = () => {
+      dragStart = null;
+    };
+    renderer.domElement.onpointercancel = () => {
+      dragStart = null;
+      suppressClick = true;
+    };
     renderer.domElement.onpointerleave = () => propsRef.current.onHover(null);
     renderer.domElement.onclick = (event) => {
+      if (suppressClick) {
+        suppressClick = false;
+        return;
+      }
       const number = pick(event);
       if (number) propsRef.current.onSelect(number);
     };
