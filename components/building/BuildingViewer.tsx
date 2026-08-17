@@ -12,6 +12,7 @@ import { Loader } from "@/components/ui/Loader";
 interface BuildingViewerProps {
   apartments: Apartment[];
   visibleNumbers: Set<string>;
+  selectableNumbers: Set<string>;
   filtersActive: boolean;
   hoveredNumber: string | null;
   selectedNumber: string | null;
@@ -88,7 +89,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
       raycaster.setFromCamera(pointer, camera);
-      const targets = unitsRef.current.filter((unit) => propsRef.current.visibleNumbers.has(unit.number)).flatMap((unit) => unit.meshes);
+      const targets = unitsRef.current.filter((unit) => propsRef.current.selectableNumbers.has(unit.number)).flatMap((unit) => unit.meshes);
       return raycaster.intersectObjects(targets, false)[0]?.object.userData.unitNumber as string | undefined;
     }
 

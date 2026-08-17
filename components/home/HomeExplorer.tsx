@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BuildingViewer } from "@/components/building/BuildingViewer";
 import { FloorPlanViewer } from "@/components/floor-plans/FloorPlanViewer";
+import { canOpenUnit } from "@/lib/data";
 import type { Apartment, PlanRegistry } from "@/lib/types";
 import { FilterSidebar } from "./FilterSidebar";
 import { UnitResults } from "./UnitResults";
@@ -71,8 +72,11 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
   );
 
   const visibleNumbers = useMemo(() => new Set(visibleUnits.map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
+  const selectableNumbers = useMemo(() => new Set(visibleUnits.filter(canOpenUnit).map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(createInitialFilters());
   function selectUnit(number: string) {
+    const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(number));
+    if (!unit || !canOpenUnit(unit)) return;
     if (selectedNumber === number) router.push(`/units/${number}`);
     else setSelectedNumber(number);
   }
@@ -101,6 +105,7 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
           <BuildingViewer
             apartments={apartments}
             visibleNumbers={visibleNumbers}
+            selectableNumbers={selectableNumbers}
             filtersActive={filtersActive}
             hoveredNumber={hoveredNumber ? String(Number(hoveredNumber)) : null}
             selectedNumber={selectedNumber ? String(Number(selectedNumber)) : null}
