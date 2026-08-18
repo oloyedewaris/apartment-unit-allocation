@@ -12,10 +12,10 @@ function publicAssetPath(path: string) {
 }
 
 function panoramaForFloor(floor: number) {
-  if (floor <= 6) return "/unit-assets/environments/view-20m-full.png";
-  if (floor <= 8) return "/unit-assets/environments/view-27m-full.png";
-  if (floor <= 10) return "/unit-assets/environments/view-34m-full.png";
-  return "/unit-assets/environments/view-42m-full.png";
+  if (floor <= 6) return "/unit-assets/environments/view-20m.webp";
+  if (floor <= 8) return "/unit-assets/environments/view-27m.webp";
+  if (floor <= 10) return "/unit-assets/environments/view-34m.webp";
+  return "/unit-assets/environments/view-42m.webp";
 }
 
 function materialKey(name: string) {
@@ -31,6 +31,19 @@ async function loadTexture(loader: THREE.TextureLoader, path: string, renderer: 
   texture.flipY = false;
   texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
   return texture;
+}
+
+async function loadTextures(loader: THREE.TextureLoader, paths: string[], renderer: THREE.WebGLRenderer, concurrency = 6) {
+  const textures = new Array<THREE.Texture>(paths.length);
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(concurrency, paths.length) }, async () => {
+    while (nextIndex < paths.length) {
+      const index = nextIndex++;
+      textures[index] = await loadTexture(loader, paths[index], renderer);
+    }
+  });
+  await Promise.all(workers);
+  return textures;
 }
 
 function fallbackMaterial(name: string) {
@@ -205,6 +218,10 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
     const modelBounds = new THREE.Box3();
     let tourBackdrop: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial> | undefined;
     let tourPanorama: THREE.Texture | undefined;
+    let modelTextures: THREE.Texture[] = [];
+    let unitEnvironment: THREE.Texture | undefined;
+    let tourBackdropPromise: Promise<void> | undefined;
+    let tourRequest = 0;
     const destinationRing = new THREE.Mesh(
       new THREE.RingGeometry(0.21, 0.3, 48),
       new THREE.MeshBasicMaterial({
@@ -351,10 +368,35 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
     resizeObserver.observe(container);
     resize();
 
+    const textureLoader = new THREE.TextureLoader();
+
+    async function ensureTourBackdrop() {
+      if (tourBackdrop) return;
+      tourBackdropPromise ??= textureLoader.loadAsync(panoramaForFloor(floor)).then((panorama) => {
+        if (disposed) {
+          panorama.dispose();
+          return;
+        }
+        tourPanorama = panorama;
+        panorama.colorSpace = THREE.SRGBColorSpace;
+        panorama.wrapS = THREE.RepeatWrapping;
+        panorama.wrapT = THREE.ClampToEdgeWrapping;
+        panorama.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tourBackdrop = new THREE.Mesh(
+          new THREE.CylinderGeometry(90, 90, 180, 192, 1, true),
+          new THREE.MeshBasicMaterial({ map: panorama, side: THREE.BackSide, toneMapped: false }),
+        );
+        tourBackdrop.position.set(modelCenter.x, modelBounds.min.y + 1.62, modelCenter.z);
+        tourBackdrop.visible = false;
+        scene.add(tourBackdrop);
+      });
+      await tourBackdropPromise;
+    }
+
     async function loadModel() {
       try {
-        const textureLoader = new THREE.TextureLoader();
-        const textures = await Promise.all(asset.textures.map((path) => loadTexture(textureLoader, path, renderer)));
+        const textures = await loadTextures(textureLoader, asset.textures, renderer);
+        modelTextures = textures;
         const atlas = asset.format === "atlas" ? textures[0] : undefined;
         const materialTextures = new Map<string, THREE.Texture>();
 
@@ -371,9 +413,9 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
         }
 
         if (asset.environment) {
-          const environment = await loadTexture(textureLoader, asset.environment, renderer);
-          environment.mapping = THREE.EquirectangularReflectionMapping;
-          scene.environment = environment;
+          unitEnvironment = await loadTexture(textureLoader, asset.environment, renderer);
+          unitEnvironment.mapping = THREE.EquirectangularReflectionMapping;
+          scene.environment = unitEnvironment;
         }
 
         const model = (await new GLTFLoader().loadAsync(publicAssetPath(asset.model))).scene;
@@ -409,20 +451,6 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
         overviewPosition.copy(camera.position);
         overviewTarget.copy(controls.target);
 
-        const panoramaSource = await textureLoader.loadAsync(panoramaForFloor(floor));
-        tourPanorama = panoramaSource;
-        tourPanorama.colorSpace = THREE.SRGBColorSpace;
-        tourPanorama.wrapS = THREE.RepeatWrapping;
-        tourPanorama.wrapT = THREE.ClampToEdgeWrapping;
-        tourPanorama.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        tourBackdrop = new THREE.Mesh(
-          new THREE.CylinderGeometry(90, 90, 180, 192, 1, true),
-          new THREE.MeshBasicMaterial({ map: tourPanorama, side: THREE.BackSide, toneMapped: false }),
-        );
-        tourBackdrop.position.set(modelCenter.x, modelBounds.min.y + 1.62, modelCenter.z);
-        tourBackdrop.visible = false;
-        scene.add(tourBackdrop);
-
         const markerCenter = walkMarker
           ? new THREE.Box3().setFromObject(walkMarker).getCenter(new THREE.Vector3())
           : findWalkableFloorPoint(model, collisionMeshes, modelCenter);
@@ -431,7 +459,14 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
         tourLookTarget.y = tourPosition.y;
         if (tourLookTarget.distanceToSquared(tourPosition) < 0.16) tourLookTarget.x += 1;
 
-        enterTour.current = () => {
+        enterTour.current = async () => {
+          const request = ++tourRequest;
+          try {
+            await ensureTourBackdrop();
+          } catch (error) {
+            console.warn("Unable to load the virtual-tour panorama", error);
+          }
+          if (disposed || request !== tourRequest) return;
           overviewPosition.copy(camera.position);
           overviewTarget.copy(controls.target);
           controls.enabled = false;
@@ -450,8 +485,10 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
           updateTourRotation();
           camera.updateProjectionMatrix();
           clock.getDelta();
+          setTourActive(true);
         };
         leaveTour.current = () => {
+          tourRequest += 1;
           tourEnabled = false;
           traveling = false;
           dragging = false;
@@ -466,16 +503,13 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
           controls.enabled = true;
           controls.update();
           camera.updateProjectionMatrix();
+          setTourActive(false);
         };
         setMovement.current = (direction, isPressed) => {
           if (isPressed) pressed.add(direction);
           else pressed.delete(direction);
         };
         setStatus("ready");
-        if (startInTour) {
-          enterTour.current();
-          setTourActive(true);
-        }
       } catch (error) {
         console.error("Unable to load unit model", error);
         if (!disposed) setStatus("error");
@@ -483,7 +517,13 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
     }
 
     loadModel();
+    let viewerVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      viewerVisible = entry.isIntersecting;
+    });
+    visibilityObserver.observe(container);
     renderer.setAnimationLoop(() => {
+      if (!viewerVisible || document.hidden) return;
       const delta = Math.min(clock.getDelta(), 0.05);
       if (tourEnabled) {
         if (traveling) {
@@ -517,7 +557,9 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
 
     return () => {
       disposed = true;
+      tourRequest += 1;
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
       renderer.setAnimationLoop(null);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
@@ -528,6 +570,8 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
       renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
       controls.dispose();
       tourPanorama?.dispose();
+      unitEnvironment?.dispose();
+      modelTextures.forEach((texture) => texture.dispose());
       scene.traverse((object) => {
         if (!(object instanceof THREE.Mesh)) return;
         object.geometry.dispose();
@@ -537,7 +581,16 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [asset, startInTour]);
+  }, [asset, floor]);
+
+  useEffect(() => {
+    if (status !== "ready") return;
+    if (startInTour) {
+      enterTour.current();
+    } else {
+      leaveTour.current();
+    }
+  }, [startInTour, status]);
 
   return (
     <div className={`unit-model${tourActive ? " is-tour-active" : ""}`} ref={host}>
@@ -548,27 +601,13 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
       )}
       {status === "error" && <div className="model-state">The interior model could not be loaded.</div>}
       {status === "ready" && !tourActive && (
-        <button
-          className="tour-button"
-          type="button"
-          onClick={() => {
-            enterTour.current();
-            setTourActive(true);
-          }}
-        >
+        <button className="tour-button" type="button" onClick={() => enterTour.current()}>
           <span aria-hidden="true">↳</span> Virtual tour
         </button>
       )}
       {tourActive && (
         <>
-          <button
-            className="tour-exit"
-            type="button"
-            onClick={() => {
-              leaveTour.current();
-              setTourActive(false);
-            }}
-          >
+          <button className="tour-exit" type="button" onClick={() => leaveTour.current()}>
             <span aria-hidden="true">←</span> Exit virtual tour
           </button>
           <div className="tour-movement" aria-label="Virtual tour movement controls">

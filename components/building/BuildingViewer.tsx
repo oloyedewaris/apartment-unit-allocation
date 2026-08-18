@@ -30,10 +30,12 @@ export function BuildingViewer(props: BuildingViewerProps) {
   const propsRef = useRef(props);
   const unitsRef = useRef<ModelUnit[]>([]);
   const repaintRef = useRef(() => {});
+  const refreshTargetsRef = useRef(() => {});
   propsRef.current = props;
 
   useEffect(() => {
     repaintRef.current();
+    refreshTargetsRef.current();
   }, [props.visibleNumbers, props.filtersActive, props.hoveredNumber, props.selectedNumber]);
 
   useEffect(() => {
@@ -63,6 +65,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       hover: new THREE.MeshBasicMaterial({ color: 0xe7a07e, transparent: true, opacity: 0.6, depthWrite: false, depthTest: false }),
       selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
+    let renderFrames = 1;
 
     repaintRef.current = () => {
       const current = propsRef.current;
@@ -81,18 +84,23 @@ export function BuildingViewer(props: BuildingViewerProps) {
           mesh.renderOrder = material === colors.selected ? 12 : material === colors.hover ? 11 : 3;
         });
       }
+      renderFrames = Math.max(renderFrames, 1);
     };
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    let selectableMeshes: THREE.Mesh[] = [];
+    refreshTargetsRef.current = () => {
+      const selectableNumbers = propsRef.current.selectableNumbers;
+      selectableMeshes = unitsRef.current.filter((unit) => selectableNumbers.has(unit.number)).flatMap((unit) => unit.meshes);
+    };
     let dragStart: { pointerId: number; x: number; y: number } | null = null;
     let suppressClick = false;
     function pick(event: PointerEvent) {
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.set(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
       raycaster.setFromCamera(pointer, camera);
-      const targets = unitsRef.current.filter((unit) => propsRef.current.selectableNumbers.has(unit.number)).flatMap((unit) => unit.meshes);
-      return raycaster.intersectObjects(targets, false)[0]?.object.userData.unitNumber as string | undefined;
+      return raycaster.intersectObjects(selectableMeshes, false)[0]?.object.userData.unitNumber as string | undefined;
     }
 
     renderer.domElement.onpointerdown = (event) => {
@@ -130,19 +138,23 @@ export function BuildingViewer(props: BuildingViewerProps) {
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
+      renderFrames = Math.max(renderFrames, 1);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(container);
     resize();
 
     let materialLibrary: Awaited<ReturnType<typeof loadBuildingMaterials>> | undefined;
+    let sceneRoot: THREE.Group | undefined;
     async function initialize() {
       const loadedMaterials = await loadBuildingMaterials(renderer);
       materialLibrary = loadedMaterials;
       scene.environment = loadedMaterials.environment;
       const draco = new DRACOLoader().setDecoderPath("/vendor/draco/");
       const root = (await new GLTFLoader().setDRACOLoader(draco).loadAsync("/volta-skai.glb")).scene;
+      draco.dispose();
       if (disposed) return;
+      sceneRoot = root;
 
       const apartmentMeshes = new Map<string, THREE.Mesh[]>();
       root.traverse((object) => {
@@ -163,6 +175,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       unitsRef.current = props.apartments
         .map((unit) => ({ number: String(Number(unit.number_num)), meshes: apartmentMeshes.get(String(Number(unit.number_num))) || [] }))
         .filter((unit) => unit.meshes.length > 0);
+      refreshTargetsRef.current();
       scene.add(root);
       root.updateWorldMatrix(true, true);
       const box = new THREE.Box3().setFromObject(root),
@@ -188,16 +201,32 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const loading = container.querySelector(".building-loading");
       if (loading) loading.textContent = "The building model could not be loaded.";
     });
+    let viewerVisible = true;
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      viewerVisible = entry.isIntersecting;
+      if (viewerVisible) renderFrames = Math.max(renderFrames, 1);
+    });
+    visibilityObserver.observe(container);
     renderer.setAnimationLoop(() => {
-      controls.update();
+      if (!viewerVisible || document.hidden) return;
+      const controlsChanged = controls.update();
+      if (!controlsChanged && renderFrames <= 0) return;
       renderer.render(scene, camera);
+      renderFrames -= 1;
     });
 
     return () => {
       disposed = true;
       observer.disconnect();
+      visibilityObserver.disconnect();
       renderer.setAnimationLoop(null);
       controls.dispose();
+      sceneRoot?.traverse((object) => {
+        if (!(object instanceof THREE.Mesh)) return;
+        object.geometry.dispose();
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach((material) => material.dispose());
+      });
       materialLibrary?.dispose();
       Object.values(colors).forEach((material) => material.dispose());
       renderer.dispose();

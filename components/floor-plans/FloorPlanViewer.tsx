@@ -23,14 +23,13 @@ export function FloorPlanViewer({ apartments, registry, initialFloor = 1, initia
   const [tower, setTower] = useState<"A" | "B">(initialTower);
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
   const floorUnits = useMemo(() => unitsOnFloor(apartments, floor, tower), [apartments, floor, tower]);
+  const floorUnitsByNumber = useMemo(() => new Map(floorUnits.map((unit) => [String(Number(unit.number_num)), unit])), [floorUnits]);
   const overlay = useMemo(() => getPlanOverlay(registry, apartments, floor, tower), [registry, apartments, floor, tower]);
   const regionMap = useMemo(() => {
     if (floor === 12) {
       const targetUnits = [...overlay.labels].sort((left, right) => Number(left.unit) - Number(right.unit));
       return Object.fromEntries(
-        ["76", "77", "78"].flatMap((sourceUnit, index) =>
-          targetUnits[index] ? [[sourceUnit, String(Number(targetUnits[index].unit))]] : [],
-        ),
+        ["76", "77", "78"].flatMap((sourceUnit, index) => (targetUnits[index] ? [[sourceUnit, String(Number(targetUnits[index].unit))]] : [])),
       );
     }
 
@@ -63,13 +62,13 @@ export function FloorPlanViewer({ apartments, registry, initialFloor = 1, initia
           highlightedUnit={hoveredUnit || (activeUnitNumber ? String(Number(activeUnitNumber)) : null)}
           onUnitHover={setHoveredUnit}
           onUnitSelect={(unitNumber) => {
-            const unit = floorUnits.find((candidate) => Number(candidate.number_num) === Number(unitNumber));
+            const unit = floorUnitsByNumber.get(String(Number(unitNumber)));
             if (unit && canOpenUnit(unit)) router.push(`/units/${unit.number_num}`);
           }}
         />
         <div className="plan-label-layer">
           {overlay.labels.map((label) => {
-            const unit = floorUnits.find((candidate) => Number(candidate.number_num) === Number(label.unit));
+            const unit = floorUnitsByNumber.get(String(Number(label.unit)));
             return unit ? (
               <UnitLabel
                 key={unit.number_num}

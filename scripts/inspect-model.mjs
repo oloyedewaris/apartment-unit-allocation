@@ -21,4 +21,17 @@ const markers = meshes
       size: markerBounds.getSize(new THREE.Vector3()).toArray(),
     };
   });
-console.log(JSON.stringify({ meshes: meshes.length, names: meshes.map((mesh) => mesh.name), markers, min: bounds.min.toArray(), max: bounds.max.toArray(), size: bounds.getSize(new THREE.Vector3()).toArray() }, null, 2));
+console.log(
+  JSON.stringify(
+    {
+      meshes: meshes.length,
+      names: meshes.map((mesh) => mesh.name),
+      markers,
+      min: bounds.min.toArray(),
+      max: bounds.max.toArray(),
+      size: bounds.getSize(new THREE.Vector3()).toArray(),
+    },
+    null,
+    2,
+  ),
+);

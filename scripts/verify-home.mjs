@@ -1,5 +1,7 @@
 import { chromium } from "playwright-core";
 
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+
 const browser = await chromium.launch({
   executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
   headless: true,
@@ -7,15 +9,22 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
 const errors = [];
-page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+page.on("console", (message) => {
+  if (message.type() === "error") errors.push(message.text());
+});
 page.on("pageerror", (error) => errors.push(error.message));
 
-await page.goto("http://localhost:3000", { waitUntil: "networkidle", timeout: 120_000 });
+await page.goto(baseUrl, { waitUntil: "networkidle", timeout: 120_000 });
 await Promise.race([
   page.locator(".building-loading").waitFor({ state: "detached", timeout: 120_000 }),
   page.getByText("The building model could not be loaded.").waitFor({ state: "visible", timeout: 120_000 }),
 ]);
-if (await page.getByText("The building model could not be loaded.").isVisible().catch(() => false)) {
+if (
+  await page
+    .getByText("The building model could not be loaded.")
+    .isVisible()
+    .catch(() => false)
+) {
   console.log(JSON.stringify({ errors }, null, 2));
   await browser.close();
   process.exit(1);
@@ -31,14 +40,20 @@ const scrollState = await page.evaluate(() => ({
   listContentHeight: document.querySelector(".result-rows")?.scrollHeight || 0,
 }));
 await page.getByRole("button", { name: "Floor plans" }).click();
-await page.locator(".floor-plan-board img").waitFor({ state: "visible" });
+await page.locator(".interactive-plan-svg").waitFor({ state: "visible" });
 await page.screenshot({ path: "verify-plans.png" });
 
-console.log(JSON.stringify({
-  resultCount: await page.locator(".result-row").count(),
-  modelCanvas,
-  floorLabels: await page.locator(".plan-unit-label").count(),
-  scrollState,
-  errors,
-}, null, 2));
+console.log(
+  JSON.stringify(
+    {
+      resultCount: await page.locator(".result-row").count(),
+      modelCanvas,
+      floorLabels: await page.locator(".plan-unit-label").count(),
+      scrollState,
+      errors,
+    },
+    null,
+    2,
+  ),
+);
 await browser.close();

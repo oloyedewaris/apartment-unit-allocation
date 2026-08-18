@@ -11,6 +11,8 @@ interface InteractivePlanSvgProps {
   onUnitSelect: (unitNumber: string) => void;
 }
 
+const planMarkupCache = new Map<string, string>();
+
 function unitKey(value: string) {
   return String(Number(value.replace(/^T/i, "")));
 }
@@ -36,16 +38,10 @@ function buildInteractiveSvg(source: string, regionMap: Record<string, string>) 
     overlay.append(region);
   });
 
-  const addedUnits = new Set(
-    Array.from(overlay.querySelectorAll<SVGElement>(".plan-unit-region")).map(
-      (region) => region.dataset.planUnit || "",
-    ),
-  );
+  const addedUnits = new Set(Array.from(overlay.querySelectorAll<SVGElement>(".plan-unit-region")).map((region) => region.dataset.planUnit || ""));
   Object.entries(regionMap).forEach(([sourceUnit, unitNumber]) => {
     if (addedUnits.has(unitNumber)) return;
-    const boundary = Array.from(svg.querySelectorAll<SVGElement>(`[id="_${sourceUnit}"]`)).find(
-      (element) => element.matches("path, polygon, rect"),
-    );
+    const boundary = Array.from(svg.querySelectorAll<SVGElement>(`[id="_${sourceUnit}"]`)).find((element) => element.matches("path, polygon, rect"));
     if (!boundary) return;
 
     const region = boundary.cloneNode(true) as SVGElement;
@@ -64,13 +60,7 @@ function buildInteractiveSvg(source: string, regionMap: Record<string, string>) 
   return new XMLSerializer().serializeToString(svg);
 }
 
-export function InteractivePlanSvg({
-  src,
-  regionMap,
-  highlightedUnit,
-  onUnitHover,
-  onUnitSelect,
-}: InteractivePlanSvgProps) {
+export function InteractivePlanSvg({ src, regionMap, highlightedUnit, onUnitHover, onUnitSelect }: InteractivePlanSvgProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredUnitRef = useRef<string | null>(null);
   const [markup, setMarkup] = useState<string | null>(null);
@@ -78,6 +68,12 @@ export function InteractivePlanSvg({
 
   useEffect(() => {
     const controller = new AbortController();
+    const cacheKey = `${src}:${regionMapKey}`;
+    const cachedMarkup = planMarkupCache.get(cacheKey);
+    if (cachedMarkup) {
+      setMarkup(cachedMarkup);
+      return () => controller.abort();
+    }
     setMarkup(null);
 
     fetch(src, { signal: controller.signal })
@@ -85,7 +81,11 @@ export function InteractivePlanSvg({
         if (!response.ok) throw new Error(`Unable to load floor plan: ${src}`);
         return response.text();
       })
-      .then((source) => setMarkup(buildInteractiveSvg(source, regionMap)))
+      .then((source) => {
+        const nextMarkup = buildInteractiveSvg(source, regionMap);
+        planMarkupCache.set(cacheKey, nextMarkup);
+        setMarkup(nextMarkup);
+      })
       .catch((error: unknown) => {
         if ((error as Error).name !== "AbortError") console.error(error);
       });
@@ -99,19 +99,13 @@ export function InteractivePlanSvg({
     const overlay = svg?.querySelector<SVGGElement>(".plan-unit-regions");
     if (!svg || !overlay) return;
 
-    const assignedUnits = new Set(
-      Array.from(overlay.querySelectorAll<SVGElement>(".plan-unit-region")).map(
-        (region) => region.dataset.planUnit || "",
-      ),
-    );
+    const assignedUnits = new Set(Array.from(overlay.querySelectorAll<SVGElement>(".plan-unit-region")).map((region) => region.dataset.planUnit || ""));
     const assignedShapes = new Set(
       Array.from(svg.querySelectorAll('g[id^="bg_"] > [id]'))
         .filter((shape) => assignedUnits.has(regionMap[unitKey(shape.id.slice(1))]))
         .map((shape) => shape),
     );
-    const shapes = Array.from(svg.querySelectorAll<SVGGraphicsElement>('g[id^="bg_"] > *')).filter(
-      (shape) => !assignedShapes.has(shape),
-    );
+    const shapes = Array.from(svg.querySelectorAll<SVGGraphicsElement>('g[id^="bg_"] > *')).filter((shape) => !assignedShapes.has(shape));
     const missingRegions = Object.entries(regionMap).filter(([, unit]) => !assignedUnits.has(unit));
     const matches = shapes.flatMap((shape) => {
       const shapeBox = shape.getBBox();
@@ -120,28 +114,11 @@ export function InteractivePlanSvg({
         if (!drawing) return { shape, unit, score: 0 };
         const drawingBox = drawing.getBBox();
         const containsDrawingCenter =
-          shape instanceof SVGGeometryElement &&
-          shape.isPointInFill(
-            new DOMPoint(
-              drawingBox.x + drawingBox.width / 2,
-              drawingBox.y + drawingBox.height / 2,
-            ),
-          );
-        const width = Math.max(
-          0,
-          Math.min(shapeBox.x + shapeBox.width, drawingBox.x + drawingBox.width) -
-            Math.max(shapeBox.x, drawingBox.x),
-        );
-        const height = Math.max(
-          0,
-          Math.min(shapeBox.y + shapeBox.height, drawingBox.y + drawingBox.height) -
-            Math.max(shapeBox.y, drawingBox.y),
-        );
+          shape instanceof SVGGeometryElement && shape.isPointInFill(new DOMPoint(drawingBox.x + drawingBox.width / 2, drawingBox.y + drawingBox.height / 2));
+        const width = Math.max(0, Math.min(shapeBox.x + shapeBox.width, drawingBox.x + drawingBox.width) - Math.max(shapeBox.x, drawingBox.x));
+        const height = Math.max(0, Math.min(shapeBox.y + shapeBox.height, drawingBox.y + drawingBox.height) - Math.max(shapeBox.y, drawingBox.y));
         const overlap = width * height;
-        const smallerArea = Math.min(
-          shapeBox.width * shapeBox.height,
-          drawingBox.width * drawingBox.height,
-        );
+        const smallerArea = Math.min(shapeBox.width * shapeBox.height, drawingBox.width * drawingBox.height);
         return {
           shape,
           unit,

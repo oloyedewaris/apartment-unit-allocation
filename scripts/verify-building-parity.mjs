@@ -9,7 +9,9 @@ const browser = await chromium.launch({
 async function capture(url, output, loadingSelector) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   const errors = [];
-  page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(url, { waitUntil: "networkidle", timeout: 120_000 });
   await page.locator(loadingSelector).waitFor({ state: "detached", timeout: 120_000 });

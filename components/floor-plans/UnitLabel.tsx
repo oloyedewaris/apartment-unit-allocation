@@ -54,12 +54,7 @@ export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 
       {content}
     </Link>
   ) : (
-    <div
-      className={className}
-      style={style}
-      onPointerEnter={() => onHover?.(String(Number(unit.number_num)))}
-      onPointerLeave={() => onHover?.(null)}
-    >
+    <div className={className} style={style} onPointerEnter={() => onHover?.(String(Number(unit.number_num)))} onPointerLeave={() => onHover?.(null)}>
       {content}
     </div>
   );

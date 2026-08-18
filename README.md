@@ -5,15 +5,15 @@ This is the maintainable Next.js apartment allocation application.
 ## First-time setup
 
 ```powershell
-npm install
-npm run dev
+yarn install --frozen-lockfile
+yarn dev
 ```
 
 Application data lives in `data`, and browser-served models, plans, textures, decoders, and brand assets live in `public`. There is no build-time dependency on a legacy application or an external filesystem path.
 
 ## Vercel deployment
 
-Commit `public` to the repository so Vercel receives the complete model and texture library. Use Vercel's normal Next.js preset with the repository root as the Root Directory and `npm run build` as the Build Command.
+Commit `public` to the repository so Vercel receives the complete model and texture library. Use Vercel's normal Next.js preset with the repository root as the Root Directory and `yarn build` as the Build Command.
 
 The generated static files total roughly 370 MB. This exceeds Vercel's Hobby static-file limit and requires a Pro project when the complete asset library is bundled with the deployment.
 

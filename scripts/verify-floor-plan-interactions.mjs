@@ -1,5 +1,7 @@
 import { chromium } from "playwright-core";
 
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+
 const browser = await chromium.launch({
   executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
   headless: true,
@@ -30,7 +32,7 @@ async function verifyPair(unitNumber) {
   }
 }
 
-await page.goto("http://localhost:3000", { waitUntil: "domcontentloaded", timeout: 120_000 });
+await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 120_000 });
 await page.getByRole("button", { name: "Floor plans" }).click();
 await page.getByRole("button", { name: "Floor 4" }).click();
 await page.waitForTimeout(1_000);
@@ -62,8 +64,8 @@ await page.locator('[data-plan-unit="121"]').waitFor();
 await verifyPair("121");
 await page.screenshot({ path: "verify-home-floor-plan-tower-b-hover.png", fullPage: true });
 
-await page.goto("http://localhost:3000/units/61", { waitUntil: "domcontentloaded", timeout: 120_000 });
-await page.getByRole("button", { name: "Floor plan" }).click();
+await page.goto(`${baseUrl}/units/61`, { waitUntil: "domcontentloaded", timeout: 120_000 });
+await page.getByRole("button", { name: "Plan", exact: true }).click();
 await page.locator(".interactive-plan-svg").waitFor();
 await verifyPair("61");
 await page.screenshot({ path: "verify-unit-floor-plan-hover.png", fullPage: true });

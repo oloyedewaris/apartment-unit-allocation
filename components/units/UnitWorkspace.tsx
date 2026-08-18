@@ -1,9 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import type { Apartment, PlanRegistry, UnitAsset } from "@/lib/types";
-import { FloorPlanViewer } from "@/components/floor-plans/FloorPlanViewer";
-import { UnitModelViewer } from "@/components/unit-model/UnitModelViewer";
+import { Loader } from "@/components/ui/Loader";
+
+const FloorPlanViewer = dynamic(() => import("@/components/floor-plans/FloorPlanViewer").then((module) => module.FloorPlanViewer), {
+  loading: () => (
+    <div className="plan-loading">
+      <Loader />
+    </div>
+  ),
+});
+const UnitModelViewer = dynamic(() => import("@/components/unit-model/UnitModelViewer").then((module) => module.UnitModelViewer), {
+  ssr: false,
+  loading: () => (
+    <div className="model-state">
+      <Loader />
+    </div>
+  ),
+});
 
 export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartment; asset: UnitAsset; apartments: Apartment[]; plans: PlanRegistry }) {
   const [view, setView] = useState<"plan" | "model" | "interior">("plan");
@@ -30,7 +46,7 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
           showControls={false}
         />
       ) : (
-        <UnitModelViewer key={view} asset={asset} floor={Number(unit.floor)} startInTour={view === "interior"} />
+        <UnitModelViewer asset={asset} floor={Number(unit.floor)} startInTour={view === "interior"} />
       )}
       {view === "plan" && (
         <aside className="unit-floor-stack" aria-label={`Floor ${unit.floor} in tower ${unit.house.identificator}`}>

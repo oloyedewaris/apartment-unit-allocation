@@ -1,5 +1,7 @@
 import { chromium } from "playwright-core";
 
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+
 const browser = await chromium.launch({
   executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
   headless: true,
@@ -10,9 +12,12 @@ const unitNumber = process.argv[2] || "61";
 async function verify(viewport, output) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
   const errors = [];
-  page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(`http://localhost:3000/units/${unitNumber}`, { waitUntil: "networkidle", timeout: 120_000 });
+  await page.goto(`${baseUrl}/units/${unitNumber}`, { waitUntil: "networkidle", timeout: 120_000 });
+  await page.getByRole("button", { name: "3D", exact: true }).click();
   await page.getByRole("button", { name: "Virtual tour" }).waitFor({ timeout: 120_000 });
   await page.getByRole("button", { name: "Virtual tour" }).click();
   await page.waitForTimeout(700);
@@ -48,14 +53,14 @@ async function verify(viewport, output) {
   const result = {
     viewport,
     active: await page.locator(".unit-model.is-tour-active").count(),
-    exitButton: await page.getByRole("button", { name: "Back to 3D model" }).count(),
+    exitButton: await page.getByRole("button", { name: "Exit virtual tour" }).count(),
     movementButtons: await page.locator(".tour-movement button").count(),
     floorTargetFound: Boolean(floorTarget),
     floorTarget: floorTarget ? { x: Math.round(floorTarget.x - box.x), y: Math.round(floorTarget.y - box.y) } : null,
     canvas: { width: Math.round(box.width), height: Math.round(box.height) },
     errors,
   };
-  await page.getByRole("button", { name: "Back to 3D model" }).click();
+  await page.getByRole("button", { name: "Exit virtual tour" }).click();
   result.restored = await page.getByRole("button", { name: "Virtual tour" }).count();
   await page.close();
   return result;

@@ -1,14 +1,30 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { BuildingViewer } from "@/components/building/BuildingViewer";
-import { FloorPlanViewer } from "@/components/floor-plans/FloorPlanViewer";
+import { Loader } from "@/components/ui/Loader";
 import { canOpenUnit } from "@/lib/data";
 import type { Apartment, PlanRegistry } from "@/lib/types";
 import { FilterSidebar } from "./FilterSidebar";
 import { UnitResults } from "./UnitResults";
 import type { ExplorerFilters } from "./types";
+
+const BuildingViewer = dynamic(() => import("@/components/building/BuildingViewer").then((module) => module.BuildingViewer), {
+  ssr: false,
+  loading: () => (
+    <div className="building-loading">
+      <Loader />
+    </div>
+  ),
+});
+const FloorPlanViewer = dynamic(() => import("@/components/floor-plans/FloorPlanViewer").then((module) => module.FloorPlanViewer), {
+  loading: () => (
+    <div className="plan-loading">
+      <Loader />
+    </div>
+  ),
+});
 
 function isCommercial(unit: Apartment) {
   const use = Object.values(unit.function).find(Boolean);
@@ -25,6 +41,7 @@ function matchesSearch(unit: Apartment, query: string) {
 
 export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; plans: PlanRegistry }) {
   const router = useRouter();
+  const unitsByNumber = useMemo(() => new Map(apartments.map((unit) => [String(Number(unit.number_num)), unit])), [apartments]);
   const bounds = useMemo(() => {
     const areas = apartments.map((unit) => Number(unit.area_size_raw)).filter(Number.isFinite);
     const prices = apartments.map((unit) => Number(unit.discounted_price_raw || unit.price_raw)).filter((price) => price > 0);
@@ -34,17 +51,20 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
       price: [Math.floor(Math.min(...prices) / 10000) * 10000, Math.ceil(Math.max(...prices) / 10000) * 10000] as [number, number],
     };
   }, [apartments]);
-  const createInitialFilters = (): ExplorerFilters => ({
-    tower: "all",
-    type: "all",
-    availableOnly: false,
-    rooms: "all",
-    floor: [...bounds.floor],
-    area: [...bounds.area],
-    price: [...bounds.price],
-    search: "",
-  });
-  const [filters, setFilters] = useState<ExplorerFilters>(createInitialFilters);
+  const initialFilters = useMemo<ExplorerFilters>(
+    () => ({
+      tower: "all",
+      type: "all",
+      availableOnly: false,
+      rooms: "all",
+      floor: [...bounds.floor],
+      area: [...bounds.area],
+      price: [...bounds.price],
+      search: "",
+    }),
+    [bounds],
+  );
+  const [filters, setFilters] = useState<ExplorerFilters>(() => initialFilters);
   const [view, setView] = useState<"model" | "plans">("model");
   const [hoveredNumber, setHoveredNumber] = useState<string | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<string | null>(null);
@@ -73,13 +93,24 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
 
   const visibleNumbers = useMemo(() => new Set(visibleUnits.map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
   const selectableNumbers = useMemo(() => new Set(visibleUnits.filter(canOpenUnit).map((unit) => String(Number(unit.number_num)))), [visibleUnits]);
-  const filtersActive = JSON.stringify(filters) !== JSON.stringify(createInitialFilters());
+  const filtersActive =
+    filters.tower !== initialFilters.tower ||
+    filters.type !== initialFilters.type ||
+    filters.availableOnly !== initialFilters.availableOnly ||
+    filters.rooms !== initialFilters.rooms ||
+    filters.floor[0] !== initialFilters.floor[0] ||
+    filters.floor[1] !== initialFilters.floor[1] ||
+    filters.area[0] !== initialFilters.area[0] ||
+    filters.area[1] !== initialFilters.area[1] ||
+    filters.price[0] !== initialFilters.price[0] ||
+    filters.price[1] !== initialFilters.price[1] ||
+    filters.search !== initialFilters.search;
   function openUnit(number: string) {
-    const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(number));
+    const unit = unitsByNumber.get(String(Number(number)));
     if (unit && canOpenUnit(unit)) router.push(`/units/${number}`);
   }
   function selectUnit(number: string) {
-    const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(number));
+    const unit = unitsByNumber.get(String(Number(number)));
     if (!unit || !canOpenUnit(unit)) return;
     if (selectedNumber === number) openUnit(number);
     else setSelectedNumber(number);
@@ -92,7 +123,7 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
         bounds={bounds}
         onChange={setFilters}
         onClear={() => {
-          setFilters(createInitialFilters());
+          setFilters(initialFilters);
           setSelectedNumber(null);
         }}
       />

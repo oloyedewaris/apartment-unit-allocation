@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { canOpenUnit, sortUnitsByFloorDescending } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import type { Apartment } from "@/lib/types";
@@ -29,8 +29,8 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
     if (rowTop < visibleTop) container.scrollTo({ top: rowTop, behavior: "smooth" });
     else if (rowBottom > visibleBottom) container.scrollTo({ top: rowBottom - container.clientHeight, behavior: "smooth" });
   }, [hoveredNumber]);
-  const available = units.filter((unit) => unit.status === "available").length;
-  const sortedUnits = sortUnitsByFloorDescending(units);
+  const available = useMemo(() => units.filter((unit) => unit.status === "available").length, [units]);
+  const sortedUnits = useMemo(() => sortUnitsByFloorDescending(units), [units]);
   return (
     <aside className="results-sidebar">
       <header>

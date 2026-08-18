@@ -1,23 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Inter } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Veerge Allocation",
-  description: "Apartment allocation system",
+  title: "Volta SKAI Allocation",
+  description: "Explore apartments, floor plans, and interiors at Volta SKAI.",
   icons: { icon: "/assets/logo.svg" },
 };
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
