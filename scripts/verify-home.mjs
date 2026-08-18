@@ -31,8 +31,20 @@ if (
 }
 await page.screenshot({ path: "verify-model.png" });
 const modelCanvas = await page.locator(".building-viewer canvas").count();
-await page.locator('.result-row[data-number="10"]').dispatchEvent("mouseover");
-await page.waitForTimeout(500);
+const canvas = page.locator(".building-viewer canvas");
+const soldUnitRow = page.locator('.result-row[data-number="134"]');
+if ((await soldUnitRow.getAttribute("aria-disabled")) !== "true") {
+  throw new Error("The sold unit row is not marked as unavailable for navigation.");
+}
+const viewBeforeListHover = await canvas.screenshot();
+await soldUnitRow.hover();
+await page.waitForTimeout(700);
+await page.getByRole("button", { name: "Floor plans" }).hover();
+await page.waitForTimeout(100);
+const cameraViewChanged = !viewBeforeListHover.equals(await canvas.screenshot());
+if (!cameraViewChanged) throw new Error("The building camera did not focus the unit hovered in the results list.");
+await soldUnitRow.dispatchEvent("click");
+if (new URL(page.url()).pathname !== "/") throw new Error("The sold unit row unexpectedly navigated away from the homepage.");
 const scrollState = await page.evaluate(() => ({
   page: document.scrollingElement?.scrollTop || 0,
   list: document.querySelector(".result-rows")?.scrollTop || 0,
@@ -48,6 +60,7 @@ console.log(
     {
       resultCount: await page.locator(".result-row").count(),
       modelCanvas,
+      cameraViewChanged,
       floorLabels: await page.locator(".plan-unit-label").count(),
       scrollState,
       errors,

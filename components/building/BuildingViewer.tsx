@@ -15,6 +15,7 @@ interface BuildingViewerProps {
   selectableNumbers: Set<string>;
   filtersActive: boolean;
   hoveredNumber: string | null;
+  focusedNumber: string | null;
   selectedNumber: string | null;
   onHover(number: string | null): void;
   onSelect(number: string): void;
@@ -23,6 +24,7 @@ interface BuildingViewerProps {
 interface ModelUnit {
   number: string;
   meshes: THREE.Mesh[];
+  center: THREE.Vector3;
 }
 
 export function BuildingViewer(props: BuildingViewerProps) {
@@ -31,12 +33,17 @@ export function BuildingViewer(props: BuildingViewerProps) {
   const unitsRef = useRef<ModelUnit[]>([]);
   const repaintRef = useRef(() => {});
   const refreshTargetsRef = useRef(() => {});
+  const focusUnitRef = useRef((_number: string | null) => {});
   propsRef.current = props;
 
   useEffect(() => {
     repaintRef.current();
     refreshTargetsRef.current();
   }, [props.visibleNumbers, props.filtersActive, props.hoveredNumber, props.selectedNumber]);
+
+  useEffect(() => {
+    focusUnitRef.current(props.focusedNumber);
+  }, [props.focusedNumber]);
 
   useEffect(() => {
     if (!host.current) return;
@@ -66,6 +73,49 @@ export function BuildingViewer(props: BuildingViewerProps) {
       selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
     let renderFrames = 1;
+    let cameraTransition:
+      | {
+          startedAt: number;
+          startAngle: number;
+          angleChange: number;
+          radius: number;
+          startY: number;
+          endY: number;
+          orbitCenter: THREE.Vector3;
+          startTarget: THREE.Vector3;
+          endTarget: THREE.Vector3;
+        }
+      | undefined;
+
+    focusUnitRef.current = (number) => {
+      if (!number) {
+        cameraTransition = undefined;
+        return;
+      }
+      const unit = unitsRef.current.find((candidate) => candidate.number === number);
+      if (!unit) return;
+
+      const buildingTarget = controls.target;
+      const cameraOffset = camera.position.clone().sub(buildingTarget);
+      const radius = Math.hypot(cameraOffset.x, cameraOffset.z);
+      const startAngle = Math.atan2(cameraOffset.x, cameraOffset.z);
+      const unitOffsetX = unit.center.x - buildingTarget.x;
+      const unitOffsetZ = unit.center.z - buildingTarget.z;
+      const endAngle = Math.atan2(unitOffsetX, unitOffsetZ);
+      const angleChange = Math.atan2(Math.sin(endAngle - startAngle), Math.cos(endAngle - startAngle));
+      cameraTransition = {
+        startedAt: performance.now(),
+        startAngle,
+        angleChange,
+        radius,
+        startY: camera.position.y,
+        endY: unit.center.y + Math.max(8, Math.abs(cameraOffset.y) * 0.45),
+        orbitCenter: buildingTarget.clone(),
+        startTarget: controls.target.clone(),
+        endTarget: unit.center.clone(),
+      };
+      renderFrames = Math.max(renderFrames, 1);
+    };
 
     repaintRef.current = () => {
       const current = propsRef.current;
@@ -172,12 +222,21 @@ export function BuildingViewer(props: BuildingViewerProps) {
         else object.material = loadedMaterials.materialFor(object.name);
       });
 
-      unitsRef.current = props.apartments
-        .map((unit) => ({ number: String(Number(unit.number_num)), meshes: apartmentMeshes.get(String(Number(unit.number_num))) || [] }))
-        .filter((unit) => unit.meshes.length > 0);
-      refreshTargetsRef.current();
       scene.add(root);
       root.updateWorldMatrix(true, true);
+      unitsRef.current = props.apartments
+        .map((unit) => {
+          const meshes = apartmentMeshes.get(String(Number(unit.number_num))) || [];
+          const center = new THREE.Vector3();
+          if (meshes.length) {
+            const bounds = new THREE.Box3();
+            meshes.forEach((mesh) => bounds.expandByObject(mesh));
+            bounds.getCenter(center);
+          }
+          return { number: String(Number(unit.number_num)), meshes, center };
+        })
+        .filter((unit) => unit.meshes.length > 0);
+      refreshTargetsRef.current();
       const box = new THREE.Box3().setFromObject(root),
         center = box.getCenter(new THREE.Vector3()),
         size = box.getSize(new THREE.Vector3()),
@@ -193,6 +252,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       camera.updateProjectionMatrix();
       controls.update();
       repaintRef.current();
+      focusUnitRef.current(propsRef.current.focusedNumber);
       container.querySelector(".building-loading")?.remove();
     }
 
@@ -209,6 +269,20 @@ export function BuildingViewer(props: BuildingViewerProps) {
     visibilityObserver.observe(container);
     renderer.setAnimationLoop(() => {
       if (!viewerVisible || document.hidden) return;
+      if (cameraTransition) {
+        const progress = THREE.MathUtils.clamp((performance.now() - cameraTransition.startedAt) / 520, 0, 1);
+        const eased = progress * progress * (3 - 2 * progress);
+        const angle = cameraTransition.startAngle + cameraTransition.angleChange * eased;
+        camera.position.set(
+          cameraTransition.orbitCenter.x + Math.sin(angle) * cameraTransition.radius,
+          THREE.MathUtils.lerp(cameraTransition.startY, cameraTransition.endY, eased),
+          cameraTransition.orbitCenter.z + Math.cos(angle) * cameraTransition.radius,
+        );
+        controls.target.lerpVectors(cameraTransition.startTarget, cameraTransition.endTarget, eased);
+        camera.lookAt(controls.target);
+        renderFrames = Math.max(renderFrames, 1);
+        if (progress >= 1) cameraTransition = undefined;
+      }
       const controlsChanged = controls.update();
       if (!controlsChanged && renderFrames <= 0) return;
       renderer.render(scene, camera);

@@ -63,11 +63,15 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
             <button
               key={unit.id}
               data-number={unit.number_num}
-              disabled={disabled}
+              aria-disabled={disabled}
               className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${selectedNumber === unit.number_num ? " selected" : ""}${disabled ? " disabled" : ""}`}
               onMouseEnter={() => onHover(unit.number_num)}
               onMouseLeave={() => onHover(null)}
-              onClick={() => onSelect(unit.number_num)}
+              onFocus={() => onHover(unit.number_num)}
+              onBlur={() => onHover(null)}
+              onClick={() => {
+                if (!disabled) onSelect(unit.number_num);
+              }}
             >
               <strong>{unit.number}</strong>
               <span>{unit.house.identificator}</span>

@@ -68,6 +68,7 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
   const [filters, setFilters] = useState<ExplorerFilters>(() => initialFilters);
   const [view, setView] = useState<"model" | "plans">("model");
   const [hoveredNumber, setHoveredNumber] = useState<string | null>(null);
+  const [focusedNumber, setFocusedNumber] = useState<string | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<string | null>(null);
 
   const visibleUnits = useMemo(
@@ -152,6 +153,7 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
             selectableNumbers={selectableNumbers}
             filtersActive={filtersActive}
             hoveredNumber={hoveredNumber ? String(Number(hoveredNumber)) : null}
+            focusedNumber={focusedNumber ? String(Number(focusedNumber)) : null}
             selectedNumber={selectedNumber ? String(Number(selectedNumber)) : null}
             onHover={setHoveredNumber}
             onSelect={openUnit}
@@ -167,7 +169,10 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
         hoveredNumber={hoveredNumber}
         selectedNumber={selectedNumber}
         onSearch={(search) => setFilters({ ...filters, search })}
-        onHover={setHoveredNumber}
+        onHover={(number) => {
+          setHoveredNumber(number);
+          setFocusedNumber(number);
+        }}
         onSelect={selectUnit}
       />
     </main>
