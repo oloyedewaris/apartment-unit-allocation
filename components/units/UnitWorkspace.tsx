@@ -9,11 +9,6 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
   const [view, setView] = useState<"plan" | "model" | "interior">("plan");
   return (
     <main className="unit-workspace" id="unit-stage">
-      {view !== "model" && (
-        <button className="workspace-back" onClick={() => setView("model")}>
-          <span aria-hidden="true">←</span> Back to 3D model
-        </button>
-      )}
       <nav className="view-tabs" aria-label="Unit view">
         <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>
           Plan
