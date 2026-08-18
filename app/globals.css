@@ -248,8 +248,7 @@ a {
     fill: transparent;
     stroke: transparent;
     pointer-events: all;
-    cursor: pointer;
-    transition: fill .18s ease
+    cursor: pointer
 }
 
 .plan-unit-region:hover,

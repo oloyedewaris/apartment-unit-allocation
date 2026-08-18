@@ -72,6 +72,7 @@ export function InteractivePlanSvg({
   onUnitSelect,
 }: InteractivePlanSvgProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const hoveredUnitRef = useRef<string | null>(null);
   const [markup, setMarkup] = useState<string | null>(null);
   const regionMapKey = useMemo(() => JSON.stringify(regionMap), [regionMap]);
 
@@ -178,15 +179,21 @@ export function InteractivePlanSvg({
     return (target as Element | null)?.closest<SVGElement>(".plan-unit-region")?.dataset.planUnit || null;
   }
 
+  function updateHoveredUnit(unitNumber: string | null) {
+    if (hoveredUnitRef.current === unitNumber) return;
+    hoveredUnitRef.current = unitNumber;
+    onUnitHover(unitNumber);
+  }
+
   return (
     <div
       ref={containerRef}
       className="interactive-plan"
-      onPointerMove={(event) => onUnitHover(unitFromTarget(event.target))}
-      onPointerLeave={() => onUnitHover(null)}
-      onFocus={(event) => onUnitHover(unitFromTarget(event.target))}
+      onPointerMove={(event) => updateHoveredUnit(unitFromTarget(event.target))}
+      onPointerLeave={() => updateHoveredUnit(null)}
+      onFocus={(event) => updateHoveredUnit(unitFromTarget(event.target))}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) onUnitHover(null);
+        if (!event.currentTarget.contains(event.relatedTarget)) updateHoveredUnit(null);
       }}
       onClick={(event) => {
         const unitNumber = unitFromTarget(event.target);
