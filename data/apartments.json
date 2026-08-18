@@ -29,11 +29,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": true,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -68,11 +68,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": true,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -107,11 +107,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": true,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -146,11 +146,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -185,11 +185,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -224,11 +224,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -263,11 +263,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": true,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -302,11 +302,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -341,11 +341,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -380,11 +380,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -419,11 +419,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -458,11 +458,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -497,11 +497,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -536,11 +536,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -575,11 +575,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -614,11 +614,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -657,7 +657,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -692,11 +692,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -731,11 +731,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -770,11 +770,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -809,11 +809,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -848,11 +848,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -887,11 +887,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -930,7 +930,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -965,11 +965,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1004,11 +1004,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1043,11 +1043,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1082,11 +1082,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1121,11 +1121,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "319900",
         "discounted_price": "319 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1160,11 +1160,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "449900",
         "discounted_price": "449 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1203,7 +1203,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1238,11 +1238,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "674900",
         "discounted_price": "674 900 &euro;",
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1277,11 +1277,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1316,11 +1316,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "599900",
         "discounted_price": "599 900 &euro;",
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1355,11 +1355,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "449900",
         "discounted_price": "449 900 &euro;",
-        "view": "Paljassaare / Meri",
+        "view": "Bare Island / Meri",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1394,11 +1394,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "299900",
         "discounted_price": "299 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1433,11 +1433,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1476,7 +1476,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1511,11 +1511,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "619900",
         "discounted_price": "619 900 &euro;",
-        "view": "Vanalinn / Krulli",
+        "view": "Old town / Krulli",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1550,11 +1550,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1589,11 +1589,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "549900",
         "discounted_price": "549 900 &euro;",
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1628,11 +1628,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1667,11 +1667,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1706,11 +1706,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1749,7 +1749,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1788,7 +1788,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1827,7 +1827,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1866,7 +1866,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1905,7 +1905,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1940,11 +1940,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -1983,7 +1983,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2022,7 +2022,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2061,7 +2061,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2100,7 +2100,7 @@
         "is_villa": false,
         "house": {
             "id": 133,
-            "name": "Krulli 10B",
+            "name": "MyxelliaB",
             "identificator": "B",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2139,7 +2139,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2178,7 +2178,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2213,11 +2213,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2256,7 +2256,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2295,7 +2295,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2334,7 +2334,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2373,7 +2373,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2412,7 +2412,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2451,7 +2451,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2486,11 +2486,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2525,11 +2525,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2564,11 +2564,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2603,11 +2603,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": true,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2642,11 +2642,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2681,11 +2681,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": true,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2720,11 +2720,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2763,7 +2763,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2798,11 +2798,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": true,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2837,11 +2837,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2876,11 +2876,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2915,11 +2915,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2954,11 +2954,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -2993,11 +2993,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3032,11 +3032,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3071,11 +3071,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3110,11 +3110,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3149,11 +3149,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3188,11 +3188,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3227,11 +3227,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3266,11 +3266,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3309,7 +3309,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3344,11 +3344,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3383,11 +3383,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3422,11 +3422,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3461,11 +3461,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3504,7 +3504,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3539,11 +3539,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3578,11 +3578,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3617,11 +3617,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3656,11 +3656,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": true,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3695,11 +3695,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3734,11 +3734,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3777,7 +3777,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3812,11 +3812,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3855,7 +3855,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3890,11 +3890,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3929,11 +3929,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -3972,7 +3972,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4007,11 +4007,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4050,7 +4050,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4089,7 +4089,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4124,11 +4124,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4167,7 +4167,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4202,11 +4202,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "369900",
         "discounted_price": "369 900 &euro;",
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4241,11 +4241,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "269900",
         "discounted_price": "269 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4280,11 +4280,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "429900",
         "discounted_price": "429 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4319,11 +4319,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "289900",
         "discounted_price": "289 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4358,11 +4358,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "299900",
         "discounted_price": "299 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4397,11 +4397,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "489900",
         "discounted_price": "489 900 &euro;",
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4436,11 +4436,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "319900",
         "discounted_price": "319 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4479,7 +4479,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4514,11 +4514,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "539900",
         "discounted_price": "539 900 &euro;",
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4557,7 +4557,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4596,7 +4596,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4635,7 +4635,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4670,11 +4670,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Meri / Vanalinn",
+        "view": "Meri / Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4713,7 +4713,7 @@
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4748,11 +4748,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "449900",
         "discounted_price": "449 900 &euro;",
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4787,11 +4787,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "414900",
         "discounted_price": "414 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4826,11 +4826,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4865,11 +4865,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4904,11 +4904,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "399900",
         "discounted_price": "399 900 &euro;",
-        "view": "Vanalinn",
+        "view": "Old town",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4943,11 +4943,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "304900",
         "discounted_price": "304 900 &euro;",
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -4982,11 +4982,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Vanalinn / Paljassaare",
+        "view": "Old town / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -5021,11 +5021,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": "514900",
         "discounted_price": "514 900 &euro;",
-        "view": "Meri / Paljassaare",
+        "view": "Meri / Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }
@@ -5060,11 +5060,11 @@
         "rental_price_formatted": null,
         "discounted_price_raw": null,
         "discounted_price": null,
-        "view": "Paljassaare",
+        "view": "Bare Island",
         "is_villa": false,
         "house": {
             "id": 9,
-            "name": "Krulli 10",
+            "name": "Myxellia",
             "identificator": "A",
             "url": "https://voltaskai.endover.ee/maja/krulli-10/"
         }

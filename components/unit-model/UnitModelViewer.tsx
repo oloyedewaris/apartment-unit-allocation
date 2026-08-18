@@ -569,7 +569,7 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
               setTourActive(false);
             }}
           >
-            <span aria-hidden="true">←</span> Back to 3D model
+            <span aria-hidden="true">←</span> Exit virtual tour
           </button>
           <div className="tour-movement" aria-label="Virtual tour movement controls">
             <button

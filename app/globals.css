@@ -226,8 +226,11 @@ a {
     z-index: 3;
     inset: 0;
     display: grid;
-    place-items: center;
-    background: var(--paper)
+    place-items: center
+}
+
+.interactive-plan:has(.plan-loading) {
+    filter: none
 }
 
 .interactive-plan-svg {
@@ -1776,9 +1779,9 @@ a {
 
 .contact-card {
     display: grid;
-    grid-template-columns: 52px minmax(0, 1fr) 38px;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     margin-top: 18px;
     padding: 0 0 22px;
     border-bottom: 1px solid #e6e5e2
@@ -1808,25 +1811,43 @@ a {
     text-transform: uppercase
 }
 
-.contact-card div>a {
-    display: inline-block;
+.contact-details>a {
+    display: block;
+    overflow: hidden;
     margin-top: 7px;
     color: #40454c;
     font-size: 11px;
+    text-overflow: ellipsis;
     text-decoration: underline;
     text-decoration-color: #e6e5e2;
-    text-underline-offset: 4px
+    text-underline-offset: 4px;
+    white-space: nowrap
+}
+
+.contact-actions {
+    display: flex;
+    gap: 6px
 }
 
 .contact-action {
     width: 38px;
     height: 38px;
+    flex: 0 0 38px;
     display: grid;
     place-items: center;
     border: 1px solid #e6e5e2;
     border-radius: 2px;
     color: #6b7178;
-    text-decoration: none
+    text-decoration: none;
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease
+}
+
+.contact-action:hover,
+.contact-action:focus-visible {
+    border-color: #14161a;
+    background: #14161a;
+    color: #fff;
+    outline: none
 }
 
 .share-unit {
