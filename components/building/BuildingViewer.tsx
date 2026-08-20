@@ -73,15 +73,15 @@ export function BuildingViewer(props: BuildingViewerProps) {
       selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
     let renderFrames = 1;
+    let defaultPolarAngle = Math.PI / 3;
     let cameraTransition:
       | {
           startedAt: number;
           startAngle: number;
           angleChange: number;
-          radius: number;
-          startY: number;
-          endY: number;
-          orbitCenter: THREE.Vector3;
+          distance: number;
+          startPolarAngle: number;
+          endPolarAngle: number;
           startTarget: THREE.Vector3;
           endTarget: THREE.Vector3;
         }
@@ -97,20 +97,33 @@ export function BuildingViewer(props: BuildingViewerProps) {
 
       const buildingTarget = controls.target;
       const cameraOffset = camera.position.clone().sub(buildingTarget);
-      const radius = Math.hypot(cameraOffset.x, cameraOffset.z);
+      const distance = cameraOffset.length();
       const startAngle = Math.atan2(cameraOffset.x, cameraOffset.z);
+      const startPolarAngle = Math.acos(THREE.MathUtils.clamp(cameraOffset.y / distance, -1, 1));
       const unitOffsetX = unit.center.x - buildingTarget.x;
       const unitOffsetZ = unit.center.z - buildingTarget.z;
       const endAngle = Math.atan2(unitOffsetX, unitOffsetZ);
       const angleChange = Math.atan2(Math.sin(endAngle - startAngle), Math.cos(endAngle - startAngle));
+      const unitHeights = unitsRef.current.map((candidate) => candidate.center.y);
+      const minimumUnitHeight = Math.min(...unitHeights);
+      const maximumUnitHeight = Math.max(...unitHeights);
+      const middleUnitHeight = (minimumUnitHeight + maximumUnitHeight) / 2;
+      const normalizedUnitHeight =
+        maximumUnitHeight === minimumUnitHeight
+          ? 0
+          : (unit.center.y - middleUnitHeight) / ((maximumUnitHeight - minimumUnitHeight) / 2);
+      const endPolarAngle = THREE.MathUtils.clamp(
+        defaultPolarAngle - normalizedUnitHeight * 0.18,
+        controls.minPolarAngle,
+        controls.maxPolarAngle,
+      );
       cameraTransition = {
         startedAt: performance.now(),
         startAngle,
         angleChange,
-        radius,
-        startY: camera.position.y,
-        endY: unit.center.y + Math.max(8, Math.abs(cameraOffset.y) * 0.45),
-        orbitCenter: buildingTarget.clone(),
+        distance,
+        startPolarAngle,
+        endPolarAngle,
         startTarget: controls.target.clone(),
         endTarget: unit.center.clone(),
       };
@@ -245,6 +258,13 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const direction = new THREE.Vector3(0.72, 1.48, 1.48).normalize();
       const distance = radius * 3.05;
       camera.position.copy(controls.target).addScaledVector(direction, distance);
+      defaultPolarAngle = Math.acos(
+        THREE.MathUtils.clamp(
+          camera.position.clone().sub(controls.target).y / distance,
+          -1,
+          1,
+        ),
+      );
       controls.minDistance = radius * 0.46;
       controls.maxDistance = distance;
       camera.near = radius / 150;
@@ -273,12 +293,18 @@ export function BuildingViewer(props: BuildingViewerProps) {
         const progress = THREE.MathUtils.clamp((performance.now() - cameraTransition.startedAt) / 520, 0, 1);
         const eased = progress * progress * (3 - 2 * progress);
         const angle = cameraTransition.startAngle + cameraTransition.angleChange * eased;
-        camera.position.set(
-          cameraTransition.orbitCenter.x + Math.sin(angle) * cameraTransition.radius,
-          THREE.MathUtils.lerp(cameraTransition.startY, cameraTransition.endY, eased),
-          cameraTransition.orbitCenter.z + Math.cos(angle) * cameraTransition.radius,
+        const polarAngle = THREE.MathUtils.lerp(
+          cameraTransition.startPolarAngle,
+          cameraTransition.endPolarAngle,
+          eased,
         );
         controls.target.lerpVectors(cameraTransition.startTarget, cameraTransition.endTarget, eased);
+        const horizontalDistance = Math.sin(polarAngle) * cameraTransition.distance;
+        camera.position.set(
+          controls.target.x + Math.sin(angle) * horizontalDistance,
+          controls.target.y + Math.cos(polarAngle) * cameraTransition.distance,
+          controls.target.z + Math.cos(angle) * horizontalDistance,
+        );
         camera.lookAt(controls.target);
         renderFrames = Math.max(renderFrames, 1);
         if (progress >= 1) cameraTransition = undefined;

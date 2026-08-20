@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Volta SKAI Allocation",
-  description: "Explore apartments, floor plans, and interiors at Volta SKAI.",
+  title: "Myxellia",
+  description: "Explore apartments, floor plans, and interiors at Myxellia.",
   icons: { icon: "/assets/logo.svg" },
 };
 

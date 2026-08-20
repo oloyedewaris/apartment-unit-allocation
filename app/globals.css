@@ -1151,10 +1151,9 @@ a {
 
 .result-columns,
 .result-row {
-    display: grid;
-    grid-template-columns: 36px 27px 24px 25px 1fr 68px;
-    align-items: center;
-    gap: 0
+    white-space: nowrap;
+    /* align-items: center; */
+    gap: 0;
 }
 
 .result-columns {
@@ -1309,7 +1308,14 @@ a {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-gutter: stable
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.result-rows::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, newer Edge */
 }
 
 .filter-sidebar>header,
