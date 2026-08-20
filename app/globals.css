@@ -411,7 +411,7 @@ a {
 .unit-details header {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    /* justify-content: flex-end; */
     padding: 0 18px
 }
 
@@ -1151,8 +1151,10 @@ a {
 
 .result-columns,
 .result-row {
+    display: grid;
+    grid-template-columns: 15fr 10fr 20fr 5fr 15fr 35fr;
+    align-items: center;
     white-space: nowrap;
-    /* align-items: center; */
     gap: 0;
 }
 
@@ -1388,11 +1390,6 @@ a {
     padding: 0 12px;
     font-size: 10px;
     line-height: 1.2
-}
-
-.result-columns,
-.result-row {
-    grid-template-columns: 36px 27px 24px 25px 1fr 66px
 }
 
 .result-columns {

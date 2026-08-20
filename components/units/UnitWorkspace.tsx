@@ -30,14 +30,14 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
         <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>
           3D
         </button>
+        <button className={view === "interior" ? "selected" : ""} onClick={() => setView("interior")}>
+          Interior
+        </button>
         <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>
           Plan
         </button>
         <button className={view === "floorPlan" ? "selected" : ""} onClick={() => setView("floorPlan")}>
           Floor Plan
-        </button>
-        <button className={view === "interior" ? "selected" : ""} onClick={() => setView("interior")}>
-          Interior
         </button>
       </nav>
       {view === "floorPlan" ? (

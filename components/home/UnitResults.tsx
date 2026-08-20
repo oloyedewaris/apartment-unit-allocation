@@ -48,13 +48,13 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
           aria-label="Search units"
         />
       </div>
-      <div className="result-columns" style={{ display: "flex" }}>
-        <span style={{ width: "15%" }}>No.</span>
-        <span style={{ width: "10%" }}>Twr</span>
-        <span style={{ width: "20%" }}>Fl</span>
-        <span style={{ width: "5%" }}>Rm</span>
-        <span style={{ width: "15%" }}>m²</span>
-        <span style={{ width: "35%" }}>Price</span>
+      <div className="result-columns">
+        <span>No.</span>
+        <span>Twr</span>
+        <span>Fl</span>
+        <span>Rm</span>
+        <span>m²</span>
+        <span>Price</span>
       </div>
       <div className="result-rows" ref={rows}>
         {sortedUnits.map((unit) => {
@@ -64,7 +64,6 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
               key={unit.id}
               data-number={unit.number_num}
               aria-disabled={disabled}
-              style={{ display: "flex" }}
               className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${selectedNumber === unit.number_num ? " selected" : ""}${disabled ? " disabled" : ""}`}
               onMouseEnter={() => onHover(unit.number_num)}
               onMouseLeave={() => onHover(null)}
@@ -74,12 +73,12 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
                 if (!disabled) onSelect(unit.number_num);
               }}
             >
-              <strong style={{ width: "15% !important" }}>{unit.number}</strong>
-              <span style={{ width: "10% !important" }}>{unit.house.identificator}</span>
-              <span style={{ width: "20% !important" }}>{unit.floor}</span>
-              <span style={{ width: "5% !important" }}>{unit.rooms_count || "-"}</span>
-              <span style={{ width: "15% !important" }}>{unit.area_size_raw}</span>
-              <span style={{ width: "35% !important" }}>{formatPrice(unit)}</span>
+              <strong>{unit.number}</strong>
+              <span>{unit.house.identificator}</span>
+              <span>{unit.floor}</span>
+              <span>{unit.rooms_count || "-"}</span>
+              <span>{unit.area_size_raw}</span>
+              <span>{formatPrice(unit)}</span>
             </button>
           );
         })}

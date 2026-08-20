@@ -102,7 +102,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
             </div>
             <div>
               <dt>Interior finish</dt>
-              <dd>SKAI</dd>
+              <dd>Myxellia</dd>
             </div>
             <div>
               <dt>Ceiling height</dt>
