@@ -22,7 +22,7 @@ const salesData = [
     role: "Sales Manager",
     tel: "+372 5944 4555",
     whatsappLink: "https://wa.me/3725944555?text=Hello%20Martin%2C%20I%20am%20interested%20in%20unit%2061%20at%20Krulli%2010.",
-    email: "hello@myxellia.io",
+    email: "david@myxellia.io",
     img: "/assets/peter.png",
   },
 ];
@@ -36,7 +36,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
   const unitKind = Object.values(unit.function).find(Boolean) || "Apartment";
   const statusLabel = { available: "Available", booked: "Reserved", sold: "Sold", request: "On request" }[unit.status];
   const salesSubject = encodeURIComponent(`Myxellia unit ${unit.number}`);
-  const salesEmail = `mailto:hello@myxellia.io?subject=${salesSubject}`;
+  const salesEmail = `mailto:david@myxellia.io?subject=${salesSubject}`;
   const floor = Number(unit.min_floor || unit.floor);
   const tower = unit.house.identificator;
   const planApartments = apartments.filter((apartment) => Number(apartment.min_floor || apartment.floor) === floor && apartment.house.identificator === tower);

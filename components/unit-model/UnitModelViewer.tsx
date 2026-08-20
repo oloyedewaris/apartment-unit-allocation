@@ -12,10 +12,10 @@ function publicAssetPath(path: string) {
 }
 
 function panoramaForFloor(floor: number) {
-  if (floor <= 6) return "/unit-assets/environments/view-20m.webp";
-  if (floor <= 8) return "/unit-assets/environments/view-27m.webp";
-  if (floor <= 10) return "/unit-assets/environments/view-34m.webp";
-  return "/unit-assets/environments/view-42m.webp";
+  if (floor <= 6) return "/unit-assets/environments/view-20m-full.png";
+  if (floor <= 8) return "/unit-assets/environments/view-27m-full.png";
+  if (floor <= 10) return "/unit-assets/environments/view-34m-full.png";
+  return "/unit-assets/environments/view-42m-full.png";
 }
 
 function materialKey(name: string) {
