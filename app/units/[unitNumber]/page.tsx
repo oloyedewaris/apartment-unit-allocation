@@ -10,18 +10,20 @@ export function generateStaticParams() {
 
 const salesData = [
   {
-    name: "Diana Uibo",
+    name: "Ahmed Ibraheem",
     role: "Customer Relations Manager",
     tel: "+372 5944 4444",
     whatsappLink: "https://wa.me/3725944444?text=Hello%20Diana%2C%20I%20am%20interested%20in%20unit%2061%20at%20Krulli%2010.",
-    email: "diana@krulli10.ee",
+    email: "ahmed@myxellia.io",
+    img: "/assets/ahmed.jpg",
   },
   {
-    name: "Martin Kask",
+    name: "David Peter",
     role: "Sales Manager",
     tel: "+372 5944 4555",
     whatsappLink: "https://wa.me/3725944555?text=Hello%20Martin%2C%20I%20am%20interested%20in%20unit%2061%20at%20Krulli%2010.",
-    email: "martinkask@krulli10.ee",
+    email: "hello@myxellia.io",
+    img: "/assets/peter.png",
   },
 ];
 
@@ -34,7 +36,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
   const unitKind = Object.values(unit.function).find(Boolean) || "Apartment";
   const statusLabel = { available: "Available", booked: "Reserved", sold: "Sold", request: "On request" }[unit.status];
   const salesSubject = encodeURIComponent(`Myxellia unit ${unit.number}`);
-  const salesEmail = `mailto:voltaskai@endover.ee?subject=${salesSubject}`;
+  const salesEmail = `mailto:hello@myxellia.io?subject=${salesSubject}`;
   const floor = Number(unit.min_floor || unit.floor);
   const tower = unit.house.identificator;
   const planApartments = apartments.filter((apartment) => Number(apartment.min_floor || apartment.floor) === floor && apartment.house.identificator === tower);
@@ -48,7 +50,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
     <div className="unit-page">
       <aside className="unit-details">
         <header className="unit-brandbar">
-          <img src="/assets/logo.svg" alt="Myxellia" />
+          {/* <img src="/assets/logo.svg" alt="Myxellia" /> */}
           <Link href="/" aria-label="Back to all units">
             <span aria-hidden="true">←</span>
           </Link>
@@ -143,10 +145,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
           <small>Your sales contact</small>
           {salesData.map((sale) => (
             <div key={sale.name} className="contact-card">
-              <span className="contact-avatar" aria-hidden="true">
-                {sale.name.split(" ")?.[0]?.[0]}
-                {sale.name.split(" ")?.[1]?.[0]}
-              </span>
+              <img className="contact-avatar" style={{}} src={sale.img} />
               <div className="contact-details">
                 <h3>{sale.name}</h3>
                 <p>{sale.role}</p>

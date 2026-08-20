@@ -411,7 +411,7 @@ a {
 .unit-details header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 0 18px
 }
 
@@ -1703,6 +1703,29 @@ a {
     filter: drop-shadow(0 26px 50px #14161a24)
 }
 
+.unit-plan-view {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: start center;
+    padding: 82px 52px 42px;
+    overflow: hidden
+}
+
+.unit-plan-view img {
+    display: block;
+    width: min(78%, 760px);
+    height: min(82%, 680px);
+    margin-top: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px #14161a18)
+}
+
+.unit-plan-view p {
+    color: #9aa0a7;
+    font-size: 12px
+}
+
 .unit-floor-stack {
     position: absolute;
     z-index: 5;
@@ -1958,6 +1981,16 @@ a {
 
     .unit-workspace>.floor-plan-viewer {
         padding: 78px 18px 125px
+    }
+
+    .unit-plan-view {
+        padding: 72px 16px 20px
+    }
+
+    .unit-plan-view img {
+        width: min(82%, 520px);
+        height: 78%;
+        margin-top: 36px
     }
 
     .unit-floor-stack {

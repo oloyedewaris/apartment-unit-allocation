@@ -64,7 +64,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
     controls.dampingFactor = 0.065;
     controls.zoomSpeed = 5.5;
     controls.minPolarAngle = 0.25;
-    controls.maxPolarAngle = Math.PI / 2.04;
+    controls.maxPolarAngle = Math.PI / 2;
 
     const colors = {
       idle: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
@@ -73,7 +73,6 @@ export function BuildingViewer(props: BuildingViewerProps) {
       selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
     let renderFrames = 1;
-    let defaultPolarAngle = Math.PI / 3;
     let cameraTransition:
       | {
           startedAt: number;
@@ -104,19 +103,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const unitOffsetZ = unit.center.z - buildingTarget.z;
       const endAngle = Math.atan2(unitOffsetX, unitOffsetZ);
       const angleChange = Math.atan2(Math.sin(endAngle - startAngle), Math.cos(endAngle - startAngle));
-      const unitHeights = unitsRef.current.map((candidate) => candidate.center.y);
-      const minimumUnitHeight = Math.min(...unitHeights);
-      const maximumUnitHeight = Math.max(...unitHeights);
-      const middleUnitHeight = (minimumUnitHeight + maximumUnitHeight) / 2;
-      const normalizedUnitHeight =
-        maximumUnitHeight === minimumUnitHeight
-          ? 0
-          : (unit.center.y - middleUnitHeight) / ((maximumUnitHeight - minimumUnitHeight) / 2);
-      const endPolarAngle = THREE.MathUtils.clamp(
-        defaultPolarAngle - normalizedUnitHeight * 0.18,
-        controls.minPolarAngle,
-        controls.maxPolarAngle,
-      );
+      const endPolarAngle = Math.PI / 2;
       cameraTransition = {
         startedAt: performance.now(),
         startAngle,
@@ -258,13 +245,6 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const direction = new THREE.Vector3(0.72, 1.48, 1.48).normalize();
       const distance = radius * 3.05;
       camera.position.copy(controls.target).addScaledVector(direction, distance);
-      defaultPolarAngle = Math.acos(
-        THREE.MathUtils.clamp(
-          camera.position.clone().sub(controls.target).y / distance,
-          -1,
-          1,
-        ),
-      );
       controls.minDistance = radius * 0.46;
       controls.maxDistance = distance;
       camera.near = radius / 150;

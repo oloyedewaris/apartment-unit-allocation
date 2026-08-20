@@ -18,6 +18,7 @@ export interface Apartment {
   price_raw: string | null;
   discounted_price_raw: string | null;
   view: string | null;
+  plan_image: string | null;
   house: { id: number; name: string; identificator: "A" | "B" };
 }
 

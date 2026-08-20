@@ -4,6 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { Apartment, PlanRegistry, UnitAsset } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
+import { UnitPlan } from "./UnitPlan";
 
 const FloorPlanViewer = dynamic(() => import("@/components/floor-plans/FloorPlanViewer").then((module) => module.FloorPlanViewer), {
   loading: () => (
@@ -22,21 +23,24 @@ const UnitModelViewer = dynamic(() => import("@/components/unit-model/UnitModelV
 });
 
 export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartment; asset: UnitAsset; apartments: Apartment[]; plans: PlanRegistry }) {
-  const [view, setView] = useState<"plan" | "model" | "interior">("plan");
+  const [view, setView] = useState<"model" | "interior" | "plan" | "floorPlan">("model");
   return (
     <main className="unit-workspace" id="unit-stage">
       <nav className="view-tabs" aria-label="Unit view">
+        <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>
+          3D
+        </button>
         <button className={view === "plan" ? "selected" : ""} onClick={() => setView("plan")}>
           Plan
         </button>
-        <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>
-          3D
+        <button className={view === "floorPlan" ? "selected" : ""} onClick={() => setView("floorPlan")}>
+          Floor Plan
         </button>
         <button className={view === "interior" ? "selected" : ""} onClick={() => setView("interior")}>
           Interior
         </button>
       </nav>
-      {view === "plan" ? (
+      {view === "floorPlan" ? (
         <FloorPlanViewer
           apartments={apartments}
           registry={plans}
@@ -45,10 +49,12 @@ export function UnitWorkspace({ unit, asset, apartments, plans }: { unit: Apartm
           activeUnitNumber={unit.number_num}
           showControls={false}
         />
+      ) : view === "plan" ? (
+        <UnitPlan unit={unit} />
       ) : (
         <UnitModelViewer asset={asset} floor={Number(unit.floor)} startInTour={view === "interior"} />
       )}
-      {view === "plan" && (
+      {view === "floorPlan" && (
         <aside className="unit-floor-stack" aria-label={`Floor ${unit.floor} in tower ${unit.house.identificator}`}>
           <small>Tower {unit.house.identificator}</small>
           <div>
