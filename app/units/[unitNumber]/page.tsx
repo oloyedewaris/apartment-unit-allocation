@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { UnitWorkspace } from "@/components/units/UnitWorkspace";
-import { apartments, assetRegistry, canOpenUnit, findApartment, planRegistry } from "@/lib/data";
+import { getApartments } from "@/lib/apartments";
+import { apartments as apartmentMetadata, assetRegistry, canOpenUnit, planRegistry } from "@/lib/data";
 import { formatArea, formatPrice } from "@/lib/format";
 
 export function generateStaticParams() {
-  return apartments.filter(canOpenUnit).map((unit) => ({ unitNumber: unit.number_num }));
+  return apartmentMetadata.map((unit) => ({ unitNumber: unit.number_num }));
 }
 
 const salesData = [
@@ -29,12 +30,14 @@ const salesData = [
 
 export default async function UnitPage({ params }: { params: Promise<{ unitNumber: string }> }) {
   const { unitNumber } = await params;
-  const unit = findApartment(unitNumber);
+  const apartments = await getApartments();
+  const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(unitNumber));
   if (!unit || !canOpenUnit(unit)) notFound();
 
   const asset = assetRegistry.units[unit.number_num];
   const unitKind = Object.values(unit.function).find(Boolean) || "Apartment";
-  const statusLabel = { available: "Available", booked: "Reserved", sold: "Sold", request: "On request" }[unit.status];
+  const status = unit.allocated ? "sold" : "available";
+  const statusLabel = unit.allocated ? "Sold" : "Available";
   const salesSubject = encodeURIComponent(`Myxellia unit ${unit.number}`);
   const salesEmail = `mailto:david@myxellia.io?subject=${salesSubject}`;
   const floor = Number(unit.min_floor || unit.floor);
@@ -86,7 +89,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
             </div>
             <div>
               <dt>Status</dt>
-              <dd className={`unit-status status-${unit.status}`}>{statusLabel}</dd>
+              <dd className={`unit-status status-${status}`}>{statusLabel}</dd>
             </div>
           </dl>
 

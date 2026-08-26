@@ -2,6 +2,13 @@ export type UnitStatus = "available" | "booked" | "sold" | "request";
 
 export interface Apartment {
   id: number;
+  name?: string;
+  unit?: number;
+  unit_name?: string;
+  allocated?: boolean;
+  generating_revenue?: boolean;
+  archived?: boolean;
+  owner?: unknown | null;
   booking_url: string | null;
   floor: string;
   min_floor: string;
@@ -20,6 +27,17 @@ export interface Apartment {
   view: string | null;
   plan_image: string | null;
   house: { id: number; name: string; identificator: "A" | "B" };
+}
+
+export interface ProjectAllocation {
+  id: number;
+  name: string;
+  unit: number;
+  unit_name: string;
+  allocated: boolean;
+  generating_revenue: boolean;
+  archived: boolean;
+  owner: unknown | null;
 }
 
 export interface UnitAsset {

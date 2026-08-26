@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/Loader";
@@ -9,7 +9,6 @@ import type { Apartment, PlanRegistry } from "@/lib/types";
 import { FilterSidebar } from "./FilterSidebar";
 import { UnitResults } from "./UnitResults";
 import type { ExplorerFilters } from "./types";
-import axios from "axios";
 
 const BuildingViewer = dynamic(() => import("@/components/building/BuildingViewer").then((module) => module.BuildingViewer), {
   ssr: false,
@@ -80,13 +79,13 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
         return (
           (filters.tower === "all" || unit.house.identificator === filters.tower) &&
           (filters.type === "all" || (filters.type === "commercial") === isCommercial(unit)) &&
-          (!filters.availableOnly || unit.status === "available") &&
+          (!filters.availableOnly || !unit.allocated) &&
           (filters.rooms === "all" || Number(unit.rooms_count) === Number(filters.rooms)) &&
           floor >= filters.floor[0] &&
           floor <= filters.floor[1] &&
           area >= filters.area[0] &&
           area <= filters.area[1] &&
-          (unit.status !== "available" || price === 0 || (price >= filters.price[0] && price <= filters.price[1])) &&
+          (unit.allocated || price === 0 || (price >= filters.price[0] && price <= filters.price[1])) &&
           matchesSearch(unit, filters.search)
         );
       }),
@@ -117,14 +116,6 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
     if (selectedNumber === number) openUnit(number);
     else setSelectedNumber(number);
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios.get("https://dev.matadortrust.com/v2/developers/project-allocations-with-owner/803/");
-      console.log("result", result?.data?.results?.data);
-    };
-    fetchData();
-  }, []);
 
   return (
     <main className="home-explorer">

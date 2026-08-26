@@ -36,7 +36,7 @@ export function UnitLabel({ unit, label, viewWidth, viewHeight, active, scale = 
           </span>
         </>
       ) : (
-        <span>{unit.status === "booked" ? "Reserved" : "Sold"}</span>
+        <span>{unit.allocated ? "Sold" : "Unavailable"}</span>
       )}
     </>
   );

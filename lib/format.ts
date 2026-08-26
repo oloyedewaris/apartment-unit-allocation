@@ -1,8 +1,7 @@
 import type { Apartment } from "./types";
 
 export function formatPrice(unit: Apartment): string {
-  if (unit.status === "sold") return "Sold";
-  if (unit.status === "booked") return "Reserved";
+  if (unit.allocated) return "Sold";
   const price = unit.discounted_price_raw || unit.price_raw;
   return price ? `${Number(price).toLocaleString("en")} €` : "Ask price";
 }

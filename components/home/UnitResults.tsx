@@ -29,7 +29,7 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
     if (rowTop < visibleTop) container.scrollTo({ top: rowTop, behavior: "smooth" });
     else if (rowBottom > visibleBottom) container.scrollTo({ top: rowBottom - container.clientHeight, behavior: "smooth" });
   }, [hoveredNumber]);
-  const available = useMemo(() => units.filter((unit) => unit.status === "available").length, [units]);
+  const available = useMemo(() => units.filter((unit) => !unit.allocated).length, [units]);
   const sortedUnits = useMemo(() => sortUnitsByFloorDescending(units), [units]);
   return (
     <aside className="results-sidebar">
@@ -58,13 +58,14 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
       </div>
       <div className="result-rows" ref={rows}>
         {sortedUnits.map((unit) => {
+          const sold = unit.allocated === true;
           const disabled = !canOpenUnit(unit);
           return (
             <button
               key={unit.id}
               data-number={unit.number_num}
               aria-disabled={disabled}
-              className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${selectedNumber === unit.number_num ? " selected" : ""}${disabled ? " disabled" : ""}`}
+              className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${selectedNumber === unit.number_num ? " selected" : ""}${sold ? " sold" : ""}${disabled ? " disabled" : ""}`}
               onMouseEnter={() => onHover(unit.number_num)}
               onMouseLeave={() => onHover(null)}
               onFocus={() => onHover(unit.number_num)}

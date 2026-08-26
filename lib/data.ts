@@ -6,17 +6,25 @@ import type { Apartment, AssetRegistry, PlanRegistry } from "./types";
 // JSON imports infer literal unions and ordinary number arrays. These runtime
 // files are validated by the synchronization scripts before reaching here.
 export const apartments = apartmentsJson as unknown as Apartment[];
-export const assetRegistry = assetsJson as unknown as AssetRegistry;
-export const planRegistry = planLabelsJson as unknown as PlanRegistry;
+const originalAssetRegistry = assetsJson as unknown as AssetRegistry;
+const fallbackAssets = Object.values(originalAssetRegistry.units);
 
-export const disabledUnitNumbers = new Set(assetRegistry.disabled.map(String));
+if (!fallbackAssets.length) throw new Error("unit-assets.json does not contain any reusable unit assets.");
+
+export const assetRegistry: AssetRegistry = {
+  units: Object.fromEntries(
+    apartments.map((unit, index) => [unit.number_num, originalAssetRegistry.units[unit.number_num] ?? fallbackAssets[index % fallbackAssets.length]]),
+  ),
+  disabled: [],
+};
+export const planRegistry = planLabelsJson as unknown as PlanRegistry;
 
 export function findApartment(unitNumber: string): Apartment | undefined {
   return apartments.find((unit) => Number(unit.number_num) === Number(unitNumber));
 }
 
 export function canOpenUnit(unit: Apartment): boolean {
-  return !disabledUnitNumbers.has(String(unit.number_num)) && Boolean(assetRegistry.units[unit.number_num]);
+  return unit.allocated === false;
 }
 
 export function sortUnitsByFloorDescending(units: Apartment[]): Apartment[] {

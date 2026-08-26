@@ -1,6 +1,8 @@
 import { HomeExplorer } from "@/components/home/HomeExplorer";
-import { apartments, planRegistry } from "@/lib/data";
+import { getApartments } from "@/lib/apartments";
+import { planRegistry } from "@/lib/data";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const apartments = await getApartments();
   return <HomeExplorer apartments={apartments} plans={planRegistry} />;
 }

@@ -1200,8 +1200,11 @@ a {
 }
 
 .result-row.disabled {
-    color: #c65c53;
     cursor: default
+}
+
+.result-row.sold {
+    color: #c65c53
 }
 
 .result-row strong {
