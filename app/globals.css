@@ -2528,8 +2528,9 @@ a {
 .phone-number-control select {
     min-width: 0;
     padding-left: 13px;
-    padding-right: 28px;
-    border-right: 0
+    padding-right: 42px;
+    border-right: 0;
+    background-position: right 14px center
 }
 
 .phone-number-control input {
