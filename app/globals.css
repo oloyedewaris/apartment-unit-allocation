@@ -844,7 +844,7 @@ a {
 .home-explorer {
     height: 100vh;
     display: grid;
-    grid-template-columns: 278px minmax(0, 1fr) 288px;
+    grid-template-columns: 278px minmax(0, 1fr) 420px;
     overflow: hidden
 }
 
@@ -1485,7 +1485,7 @@ a {
     --unit-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     min-height: 720px;
     height: 100vh;
-    grid-template-columns: clamp(280px, 16vw, 308px) minmax(0, 1fr) clamp(330px, 20.5vw, 392px);
+    grid-template-columns: clamp(280px, 16vw, 308px) minmax(0, 1fr) 420px;
     overflow: hidden;
     background: #fff
 }

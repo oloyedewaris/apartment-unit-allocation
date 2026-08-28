@@ -130,9 +130,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
         <section className="reservation-block">
           <small>Your new home</small>
           <h2>
-            {unit.booking_url ? "Reserve" : "Ask about"} unit {unit.number}
-            <br />
-            {unit.booking_url ? "in your name" : "with our sales team"}
+            {unit.booking_url ? "Reserve" : "Ask about"} unit {unit.number} {unit.booking_url ? "in your name" : "with our sales team"}
           </h2>
           <p>
             {unit.booking_url
