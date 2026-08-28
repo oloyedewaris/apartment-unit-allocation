@@ -62,7 +62,6 @@ export function BuildingViewer(props: BuildingViewerProps) {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.065;
-    controls.zoomSpeed = 5.5;
     controls.minPolarAngle = 0.25;
     controls.maxPolarAngle = Math.PI / 2;
 
@@ -73,6 +72,8 @@ export function BuildingViewer(props: BuildingViewerProps) {
       selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
     let renderFrames = 1;
+    let desiredDistance: number | undefined;
+    let previousFrameTime = performance.now();
     let cameraTransition:
       | {
           startedAt: number;
@@ -116,6 +117,20 @@ export function BuildingViewer(props: BuildingViewerProps) {
       };
       renderFrames = Math.max(renderFrames, 1);
     };
+
+    const onWheel = (event: WheelEvent) => {
+      if (!controls.enabled) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      cameraTransition = undefined;
+
+      const currentDistance = camera.position.distanceTo(controls.target);
+      const deltaMultiplier = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? container.clientHeight : 1;
+      const delta = THREE.MathUtils.clamp(event.deltaY * deltaMultiplier, -240, 240);
+      desiredDistance = THREE.MathUtils.clamp((desiredDistance ?? currentDistance) * Math.exp(delta * 0.001), controls.minDistance, controls.maxDistance);
+      renderFrames = Math.max(renderFrames, 1);
+    };
+    renderer.domElement.addEventListener("wheel", onWheel, { capture: true, passive: false });
 
     repaintRef.current = () => {
       const current = propsRef.current;
@@ -267,17 +282,15 @@ export function BuildingViewer(props: BuildingViewerProps) {
       if (viewerVisible) renderFrames = Math.max(renderFrames, 1);
     });
     visibilityObserver.observe(container);
-    renderer.setAnimationLoop(() => {
+    renderer.setAnimationLoop((time) => {
       if (!viewerVisible || document.hidden) return;
+      const deltaTime = Math.min((time - previousFrameTime) / 1000, 0.05);
+      previousFrameTime = time;
       if (cameraTransition) {
         const progress = THREE.MathUtils.clamp((performance.now() - cameraTransition.startedAt) / 520, 0, 1);
         const eased = progress * progress * (3 - 2 * progress);
         const angle = cameraTransition.startAngle + cameraTransition.angleChange * eased;
-        const polarAngle = THREE.MathUtils.lerp(
-          cameraTransition.startPolarAngle,
-          cameraTransition.endPolarAngle,
-          eased,
-        );
+        const polarAngle = THREE.MathUtils.lerp(cameraTransition.startPolarAngle, cameraTransition.endPolarAngle, eased);
         controls.target.lerpVectors(cameraTransition.startTarget, cameraTransition.endTarget, eased);
         const horizontalDistance = Math.sin(polarAngle) * cameraTransition.distance;
         camera.position.set(
@@ -288,6 +301,17 @@ export function BuildingViewer(props: BuildingViewerProps) {
         camera.lookAt(controls.target);
         renderFrames = Math.max(renderFrames, 1);
         if (progress >= 1) cameraTransition = undefined;
+      }
+      if (desiredDistance !== undefined && !cameraTransition) {
+        const offset = camera.position.clone().sub(controls.target);
+        const currentDistance = offset.length();
+        const nextDistance = THREE.MathUtils.damp(currentDistance, desiredDistance, 15, deltaTime);
+        camera.position.copy(controls.target).addScaledVector(offset.normalize(), nextDistance);
+        renderFrames = Math.max(renderFrames, 1);
+        if (Math.abs(nextDistance - desiredDistance) < 0.01) {
+          camera.position.copy(controls.target).addScaledVector(offset, desiredDistance);
+          desiredDistance = undefined;
+        }
       }
       const controlsChanged = controls.update();
       if (!controlsChanged && renderFrames <= 0) return;
@@ -300,6 +324,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
       observer.disconnect();
       visibilityObserver.disconnect();
       renderer.setAnimationLoop(null);
+      renderer.domElement.removeEventListener("wheel", onWheel, true);
       controls.dispose();
       sceneRoot?.traverse((object) => {
         if (!(object instanceof THREE.Mesh)) return;
