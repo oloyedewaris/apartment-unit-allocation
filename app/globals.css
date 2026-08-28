@@ -2296,8 +2296,8 @@ a {
 }
 
 .reservation-field input:focus {
-    border-color: #14161a;
-    box-shadow: inset 0 0 0 1px #14161a
+    border-color: #ccc9c3;
+    box-shadow: none
 }
 
 .reservation-field input::placeholder {
@@ -2367,8 +2367,8 @@ a {
 }
 
 .verification-code input:focus {
-    border-color: #14161a;
-    box-shadow: inset 0 0 0 1px #14161a
+    border-color: #ccc9c3;
+    box-shadow: none
 }
 
 .verification-resend {
@@ -2444,8 +2444,8 @@ a {
 }
 
 .reservation-field select:focus {
-    border-color: #14161a;
-    box-shadow: inset 0 0 0 1px #14161a
+    border-color: #ccc9c3;
+    box-shadow: none
 }
 
 .date-of-birth-control {
@@ -2489,7 +2489,7 @@ a {
 }
 
 .date-of-birth-control:focus-within {
-    box-shadow: 0 0 0 1px #14161a
+    box-shadow: none
 }
 
 .next-of-kin-scroll {
@@ -2538,7 +2538,7 @@ a {
 }
 
 .phone-number-control:focus-within {
-    box-shadow: 0 0 0 1px #14161a
+    box-shadow: none
 }
 
 .reservation-field textarea {
@@ -2558,8 +2558,8 @@ a {
 }
 
 .reservation-field textarea:focus {
-    border-color: #14161a;
-    box-shadow: inset 0 0 0 1px #14161a
+    border-color: #ccc9c3;
+    box-shadow: none
 }
 
 .reservation-field textarea::placeholder {
