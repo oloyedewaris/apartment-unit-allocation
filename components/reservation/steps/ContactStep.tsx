@@ -16,9 +16,6 @@ export function ContactStep({ unitNumber, email, onEmailChange, onBack, onSendCo
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 3 of 7 <span aria-hidden="true">·</span> Contact
         </p>

@@ -30,6 +30,14 @@ function reservationReference(propertyName: string, unitNumber: string, reserved
   return `${propertyCode}-${unitNumber}-${customerCode}`;
 }
 
+function inboxUrl(email: string) {
+  const domain = email.split("@")[1]?.toLowerCase();
+  if (domain === "gmail.com") return "https://mail.google.com/mail/u/0/#inbox";
+  if (["outlook.com", "hotmail.com", "live.com"].includes(domain)) return "https://outlook.live.com/mail/0/";
+  if (domain === "yahoo.com") return "https://mail.yahoo.com/";
+  return `mailto:${email}`;
+}
+
 export function ReservationSuccess({ propertyName, unitNumber, email, reservedBy, price, plan, onBackToUnit }: ReservationSuccessProps) {
   const amountDue = (price * plan.initialPercentage) / 100;
   const reference = reservationReference(propertyName, unitNumber, reservedBy);
@@ -38,29 +46,37 @@ export function ReservationSuccess({ propertyName, unitNumber, email, reservedBy
     <div className="reservation-success">
       <div className="reservation-success-scroll">
         <span className="reservation-success-icon" aria-hidden="true">
-          ✓
+          <span />
         </span>
         <small>{propertyName}</small>
-        <h2>Unit {unitNumber} is held in your name</h2>
+        <h2>Check your email to continue</h2>
         <p>
-          We have emailed <strong>{email}</strong> with the reservation form, payment instructions, and a copy of the agreement. The reservation hold lasts 72
-          hours.
+          Unit {unitNumber} is held in your name for 72 hours. Everything you need next is in the message we just sent to <strong>{email}</strong>.
         </p>
 
-        <dl className="reservation-success-details">
-          <div>
-            <dt>Plan</dt>
-            <dd>{plan.name}</dd>
-          </div>
-          <div>
-            <dt>Due now</dt>
-            <dd>{formatCurrency(amountDue)}</dd>
-          </div>
-          <div>
-            <dt>Reserved by</dt>
-            <dd>{reservedBy}</dd>
-          </div>
-        </dl>
+        <ol className="reservation-next-steps">
+          <li>
+            <span>1</span>
+            <div>
+              <strong>Open the reservation email</strong>
+              <p>It carries your reservation form, the signed terms and your reference.</p>
+            </div>
+          </li>
+          <li>
+            <span>2</span>
+            <div>
+              <strong>Pay {formatCurrency(amountDue)}</strong>
+              <p>Card, transfer and the account details are in the email. The hold releases if payment is not received by then.</p>
+            </div>
+          </li>
+          <li>
+            <span>3</span>
+            <div>
+              <strong>We confirm allocation</strong>
+              <p>Once payment clears, our sales team sends your allocation letter and the unit moves to sold in the map.</p>
+            </div>
+          </li>
+        </ol>
 
         <div className="reservation-reference">
           <small>Reservation reference</small>
@@ -69,9 +85,15 @@ export function ReservationSuccess({ propertyName, unitNumber, email, reservedBy
       </div>
 
       <footer className="reservation-success-action">
-        <button type="button" onClick={onBackToUnit}>
-          Back to unit <span aria-hidden="true">→</span>
-        </button>
+        <a className="reservation-open-email" href={inboxUrl(email)} target="_blank" rel="noreferrer">
+          Open email <span aria-hidden="true">→</span>
+        </a>
+        <p>
+          Email not arrived? <a href={`mailto:${email}`}>Resend to {email}</a> or{" "}
+          <button type="button" onClick={onBackToUnit}>
+            start again
+          </button>
+        </p>
       </footer>
     </div>
   );

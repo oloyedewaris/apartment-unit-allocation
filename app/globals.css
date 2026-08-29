@@ -844,7 +844,7 @@ a {
 .home-explorer {
     height: 100vh;
     display: grid;
-    grid-template-columns: 278px minmax(0, 1fr) 420px;
+    grid-template-columns: 278px minmax(0, 1fr) 350px;
     overflow: hidden
 }
 
@@ -1195,10 +1195,6 @@ a {
     background: #eee8df
 }
 
-.result-row.selected {
-    background: #dfc6b8
-}
-
 .result-row.disabled {
     cursor: default
 }
@@ -1485,7 +1481,7 @@ a {
     --unit-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     min-height: 720px;
     height: 100vh;
-    grid-template-columns: clamp(280px, 16vw, 308px) minmax(0, 1fr) 420px;
+    grid-template-columns: clamp(280px, 16vw, 308px) minmax(0, 1fr) 350px;
     overflow: hidden;
     background: #fff
 }
@@ -1917,25 +1913,6 @@ a {
     border-bottom: 1px solid #e6e5e2
 }
 
-.reservation-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: #8a8f96;
-    font: inherit;
-    font-size: 11px;
-    cursor: pointer
-}
-
-.reservation-back-link:hover,
-.reservation-back-link:focus-visible {
-    color: #14161a;
-    outline: none
-}
-
 .reservation-step-header p {
     margin: 0;
     color: #8a8f96;
@@ -2170,7 +2147,7 @@ a {
 .payment-summary-details>div {
     min-height: 49px;
     display: grid;
-    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
     align-items: center;
     gap: 15px;
     border-bottom: 1px solid #e6e5e2
@@ -2448,50 +2425,6 @@ a {
     box-shadow: none
 }
 
-.date-of-birth-control {
-    position: relative
-}
-
-.date-of-birth-control>input:first-child {
-    padding-right: 50px
-}
-
-.calendar-icon {
-    position: absolute;
-    top: 17px;
-    right: 17px;
-    width: 15px;
-    height: 14px;
-    border: 1.5px solid #14161a;
-    border-radius: 2px;
-    pointer-events: none
-}
-
-.calendar-icon:before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: -1.5px;
-    width: 15px;
-    border-top: 1.5px solid #14161a
-}
-
-.native-date-picker {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 48px !important;
-    height: 50px !important;
-    padding: 0 !important;
-    border: 0 !important;
-    opacity: 0;
-    cursor: pointer
-}
-
-.date-of-birth-control:focus-within {
-    box-shadow: none
-}
-
 .next-of-kin-scroll {
     padding-top: 24px
 }
@@ -2539,31 +2472,6 @@ a {
 
 .phone-number-control:focus-within {
     box-shadow: none
-}
-
-.reservation-field textarea {
-    width: 100%;
-    min-height: 88px;
-    resize: vertical;
-    padding: 13px 14px;
-    border: 1px solid #ccc9c3;
-    border-radius: 0;
-    background: #fff;
-    color: #14161a;
-    font: inherit;
-    font-size: 13px;
-    line-height: 1.5;
-    outline: none;
-    transition: border-color .18s ease, box-shadow .18s ease
-}
-
-.reservation-field textarea:focus {
-    border-color: #ccc9c3;
-    box-shadow: none
-}
-
-.reservation-field textarea::placeholder {
-    color: #979a9e
 }
 
 .documents-step-scroll {
@@ -2705,18 +2613,44 @@ a {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 44px 26px 36px
+    padding: 44px 26px 28px
 }
 
 .reservation-success-icon {
     width: 64px;
     height: 64px;
-    display: grid;
-    place-items: center;
+    position: relative;
+    display: block;
     margin-bottom: 28px;
-    border: 1px solid #14161a;
-    color: #14161a;
-    font: 400 27px/1 var(--unit-serif)
+    border: 1px solid #14161a
+}
+
+.reservation-success-icon>span {
+    position: absolute;
+    top: 24px;
+    left: 21px;
+    width: 20px;
+    height: 15px;
+    border: 2px solid #14161a
+}
+
+.reservation-success-icon>span:after,
+.reservation-success-icon>span:before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    width: 11px;
+    border-top: 2px solid #14161a
+}
+
+.reservation-success-icon>span:before {
+    left: 0;
+    transform: rotate(35deg)
+}
+
+.reservation-success-icon>span:after {
+    right: 0;
+    transform: rotate(-35deg)
 }
 
 .reservation-success-scroll>small,
@@ -2736,10 +2670,10 @@ a {
 }
 
 .reservation-success-scroll>p {
-    margin: 25px 0 0;
+    margin: 24px 0 0;
     color: #3f444a;
     font-size: 13px;
-    line-height: 1.65
+    line-height: 1.55
 }
 
 .reservation-success-scroll>p strong {
@@ -2747,34 +2681,43 @@ a {
     overflow-wrap: anywhere
 }
 
-.reservation-success-details {
-    margin: 29px 0 0
+.reservation-next-steps {
+    margin: 30px 0 0;
+    padding: 0;
+    border-top: 1px solid #e6e5e2;
+    list-style: none
 }
 
-.reservation-success-details>div {
-    min-height: 50px;
+.reservation-next-steps li {
     display: grid;
-    grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
-    align-items: center;
+    grid-template-columns: 28px minmax(0, 1fr);
     gap: 14px;
+    padding: 18px 0;
     border-bottom: 1px solid #e6e5e2
 }
 
-.reservation-success-details dt,
-.reservation-success-details dd {
-    margin: 0;
+.reservation-next-steps li>span {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #ccc9c3;
+    color: #656a70;
+    font: 400 13px/1 var(--unit-serif)
+}
+
+.reservation-next-steps strong {
+    display: block;
+    color: #14161a;
     font-size: 12px;
     line-height: 1.35
 }
 
-.reservation-success-details dt {
-    color: #9aa0a7
-}
-
-.reservation-success-details dd {
-    color: #14161a;
-    font-weight: 600;
-    text-align: right
+.reservation-next-steps p {
+    margin: 4px 0 0;
+    color: #9aa0a7;
+    font-size: 11px;
+    line-height: 1.5
 }
 
 .reservation-reference {
@@ -2791,12 +2734,12 @@ a {
 }
 
 .reservation-success-action {
-    padding: 16px 26px;
+    padding: 16px 26px 18px;
     border-top: 1px solid #e6e5e2;
     background: #fff
 }
 
-.reservation-success-action button {
+.reservation-open-email {
     width: 100%;
     height: 60px;
     display: flex;
@@ -2809,6 +2752,25 @@ a {
     color: #fff;
     font-size: 13px;
     font-weight: 600;
+    text-decoration: none;
+    cursor: pointer
+}
+
+.reservation-success-action>p {
+    margin: 14px 0 0;
+    color: #9aa0a7;
+    font-size: 10px;
+    line-height: 1.5
+}
+
+.reservation-success-action>p a,
+.reservation-success-action>p button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #14161a;
+    font: inherit;
+    text-decoration: underline;
     cursor: pointer
 }
 

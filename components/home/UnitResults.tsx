@@ -8,13 +8,12 @@ interface UnitResultsProps {
   total: number;
   search: string;
   hoveredNumber: string | null;
-  selectedNumber: string | null;
   onSearch(value: string): void;
   onHover(number: string | null): void;
   onSelect(number: string): void;
 }
 
-export function UnitResults({ units, total, search, hoveredNumber, selectedNumber, onSearch, onHover, onSelect }: UnitResultsProps) {
+export function UnitResults({ units, total, search, hoveredNumber, onSearch, onHover, onSelect }: UnitResultsProps) {
   const rows = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const container = rows.current;
@@ -65,7 +64,7 @@ export function UnitResults({ units, total, search, hoveredNumber, selectedNumbe
               key={unit.id}
               data-number={unit.number_num}
               aria-disabled={disabled}
-              className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${selectedNumber === unit.number_num ? " selected" : ""}${sold ? " sold" : ""}${disabled ? " disabled" : ""}`}
+              className={`result-row${hoveredNumber === unit.number_num ? " hovered" : ""}${sold ? " sold" : ""}${disabled ? " disabled" : ""}`}
               onMouseEnter={() => onHover(unit.number_num)}
               onMouseLeave={() => onHover(null)}
               onFocus={() => onHover(unit.number_num)}

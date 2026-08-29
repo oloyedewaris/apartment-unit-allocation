@@ -59,9 +59,6 @@ export function VerificationStep({ email, code, onCodeChange, onChangeAddress, o
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 4 of 7 <span aria-hidden="true">·</span> Verify
         </p>

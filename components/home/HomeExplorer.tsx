@@ -68,7 +68,6 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
   const [view, setView] = useState<"model" | "plans">("model");
   const [hoveredNumber, setHoveredNumber] = useState<string | null>(null);
   const [focusedNumber, setFocusedNumber] = useState<string | null>(null);
-  const [selectedNumber, setSelectedNumber] = useState<string | null>(null);
 
   const visibleUnits = useMemo(
     () =>
@@ -110,24 +109,9 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
     const unit = unitsByNumber.get(String(Number(number)));
     if (unit && canOpenUnit(unit)) router.push(`/units/${number}`);
   }
-  function selectUnit(number: string) {
-    const unit = unitsByNumber.get(String(Number(number)));
-    if (!unit || !canOpenUnit(unit)) return;
-    if (selectedNumber === number) openUnit(number);
-    else setSelectedNumber(number);
-  }
-
   return (
     <main className="home-explorer">
-      <FilterSidebar
-        filters={filters}
-        bounds={bounds}
-        onChange={setFilters}
-        onClear={() => {
-          setFilters(initialFilters);
-          setSelectedNumber(null);
-        }}
-      />
+      <FilterSidebar filters={filters} bounds={bounds} onChange={setFilters} onClear={() => setFilters(initialFilters)} />
       <section className="explorer-center">
         <nav className="home-view-tabs" aria-label="Explorer view">
           <button className={view === "model" ? "selected" : ""} onClick={() => setView("model")}>
@@ -145,7 +129,6 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
             filtersActive={filtersActive}
             hoveredNumber={hoveredNumber ? String(Number(hoveredNumber)) : null}
             focusedNumber={focusedNumber ? String(Number(focusedNumber)) : null}
-            selectedNumber={selectedNumber ? String(Number(selectedNumber)) : null}
             onHover={setHoveredNumber}
             onSelect={openUnit}
           />
@@ -158,13 +141,12 @@ export function HomeExplorer({ apartments, plans }: { apartments: Apartment[]; p
         total={apartments.length}
         search={filters.search}
         hoveredNumber={hoveredNumber}
-        selectedNumber={selectedNumber}
         onSearch={(search) => setFilters({ ...filters, search })}
         onHover={(number) => {
           setHoveredNumber(number);
           setFocusedNumber(number);
         }}
-        onSelect={selectUnit}
+        onSelect={openUnit}
       />
     </main>
   );

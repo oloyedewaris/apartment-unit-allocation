@@ -51,9 +51,6 @@ export function NextOfKinStep({ values, onChange, onBack, onContinue }: NextOfKi
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 6 of 7 <span aria-hidden="true">·</span> Next of kin
         </p>
@@ -140,9 +137,10 @@ export function NextOfKinStep({ values, onChange, onBack, onContinue }: NextOfKi
             <label htmlFor="next-of-kin-address">
               Residential address <span aria-hidden="true">*</span>
             </label>
-            <textarea
+            <input
               id="next-of-kin-address"
               name="nextOfKinAddress"
+              type="text"
               autoComplete="street-address"
               placeholder="Street, city, country"
               value={values.residentialAddress}

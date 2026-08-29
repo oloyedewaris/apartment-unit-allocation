@@ -18,9 +18,6 @@ export function PaymentSummaryStep({ unitNumber, price, plan, acceptedTerms, onA
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 2 of 7 <span aria-hidden="true">·</span> Payment summary
         </p>
@@ -44,18 +41,24 @@ export function PaymentSummaryStep({ unitNumber, price, plan, acceptedTerms, onA
             <dt>Purchase price</dt>
             <dd>{formatCurrency(price)}</dd>
           </div>
-          <div>
-            <dt>Plan</dt>
-            <dd>{plan.name}</dd>
-          </div>
-          <div>
-            <dt>Balance</dt>
-            <dd>{formatCurrency(balance)}</dd>
-          </div>
-          <div>
-            <dt>Monthly installment</dt>
-            <dd>{monthlyInstallment && plan.months ? `${formatCurrency(monthlyInstallment)} × ${plan.months}` : "Not applicable"}</dd>
-          </div>
+          {plan.name !== "Outright payment" && (
+            <div>
+              <dt>Plan</dt>
+              <dd>{plan.name}</dd>
+            </div>
+          )}
+          {plan.name !== "Outright payment" && (
+            <div>
+              <dt>Balance</dt>
+              <dd>{formatCurrency(balance)}</dd>
+            </div>
+          )}
+          {plan.name !== "Outright payment" && (
+            <div>
+              <dt>Monthly installment</dt>
+              <dd>{monthlyInstallment && plan.months ? `${formatCurrency(monthlyInstallment)} × ${plan.months}` : "Not applicable"}</dd>
+            </div>
+          )}
         </dl>
 
         <section className="payment-terms">

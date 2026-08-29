@@ -16,7 +16,6 @@ interface BuildingViewerProps {
   filtersActive: boolean;
   hoveredNumber: string | null;
   focusedNumber: string | null;
-  selectedNumber: string | null;
   onHover(number: string | null): void;
   onSelect(number: string): void;
 }
@@ -39,7 +38,7 @@ export function BuildingViewer(props: BuildingViewerProps) {
   useEffect(() => {
     repaintRef.current();
     refreshTargetsRef.current();
-  }, [props.visibleNumbers, props.filtersActive, props.hoveredNumber, props.selectedNumber]);
+  }, [props.visibleNumbers, props.filtersActive, props.hoveredNumber]);
 
   useEffect(() => {
     focusUnitRef.current(props.focusedNumber);
@@ -69,7 +68,6 @@ export function BuildingViewer(props: BuildingViewerProps) {
       idle: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
       filtered: new THREE.MeshBasicMaterial({ color: 0xf4ece6, transparent: true, opacity: 0.58, depthWrite: false }),
       hover: new THREE.MeshBasicMaterial({ color: 0xe7a07e, transparent: true, opacity: 0.6, depthWrite: false, depthTest: false }),
-      selected: new THREE.MeshBasicMaterial({ color: 0xdf815f, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false }),
     };
     let renderFrames = 1;
     let desiredDistance: number | undefined;
@@ -136,17 +134,10 @@ export function BuildingViewer(props: BuildingViewerProps) {
       const current = propsRef.current;
       for (const unit of unitsRef.current) {
         const visible = current.visibleNumbers.has(unit.number);
-        const material =
-          unit.number === current.selectedNumber
-            ? colors.selected
-            : unit.number === current.hoveredNumber
-              ? colors.hover
-              : !visible && current.filtersActive
-                ? colors.filtered
-                : colors.idle;
+        const material = unit.number === current.hoveredNumber ? colors.hover : !visible && current.filtersActive ? colors.filtered : colors.idle;
         unit.meshes.forEach((mesh) => {
           mesh.material = material;
-          mesh.renderOrder = material === colors.selected ? 12 : material === colors.hover ? 11 : 3;
+          mesh.renderOrder = material === colors.hover ? 11 : 3;
         });
       }
       renderFrames = Math.max(renderFrames, 1);

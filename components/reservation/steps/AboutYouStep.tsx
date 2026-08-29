@@ -1,5 +1,6 @@
 export interface AboutYouValues {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   dateOfBirth: string;
   maritalStatus: string;
   gender: string;
@@ -14,7 +15,7 @@ interface AboutYouStepProps {
 }
 
 const maritalStatuses = ["Single", "Married", "Separated", "Divorced", "Widowed", "Prefer not to say"];
-const genders = ["Female", "Male", "Non-binary", "Prefer to self-describe", "Prefer not to say"];
+const genders = ["Female", "Male", "Prefer not to say"];
 const educationLevels = [
   "No formal education",
   "Primary education",
@@ -43,18 +44,6 @@ function dateFromDisplay(value: string) {
   return date;
 }
 
-function displayFromIso(value: string) {
-  if (!value) return "";
-  const [year, month, day] = value.split("-");
-  return `${day}/${month}/${year}`;
-}
-
-function isoFromDisplay(value: string) {
-  const date = dateFromDisplay(value);
-  if (!date) return "";
-  return date.toISOString().slice(0, 10);
-}
-
 function validDateOfBirth(value: string) {
   const date = dateFromDisplay(value);
   if (!date) return false;
@@ -66,15 +55,13 @@ function validDateOfBirth(value: string) {
 export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouStepProps) {
   const update = <Key extends keyof AboutYouValues>(key: Key, value: AboutYouValues[Key]) => onChange({ ...values, [key]: value });
   const complete =
-    values.fullName.trim().length >= 2 && validDateOfBirth(values.dateOfBirth) && Boolean(values.maritalStatus && values.gender && values.education);
-  const today = new Date().toISOString().slice(0, 10);
-
+    values.firstName.trim().length >= 2 &&
+    values.lastName.trim().length >= 2 &&
+    validDateOfBirth(values.dateOfBirth) &&
+    Boolean(values.maritalStatus && values.gender && values.education);
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 5 of 7 <span aria-hidden="true">·</span> About you
         </p>
@@ -88,17 +75,33 @@ export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouS
 
         <div className="about-you-fields">
           <div className="reservation-field">
-            <label htmlFor="reservation-full-name">
-              Full name <span aria-hidden="true">*</span>
+            <label htmlFor="reservation-first-name">
+              First name <span aria-hidden="true">*</span>
             </label>
             <input
-              id="reservation-full-name"
-              name="fullName"
+              id="reservation-first-name"
+              name="firstName"
               type="text"
-              autoComplete="name"
+              autoComplete="given-name"
               placeholder="As written on your ID"
-              value={values.fullName}
-              onChange={(event) => update("fullName", event.target.value)}
+              value={values.firstName}
+              onChange={(event) => update("firstName", event.target.value)}
+              required
+            />
+          </div>
+
+          <div className="reservation-field">
+            <label htmlFor="reservation-last-name">
+              Last name <span aria-hidden="true">*</span>
+            </label>
+            <input
+              id="reservation-last-name"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              placeholder="As written on your ID"
+              value={values.lastName}
+              onChange={(event) => update("lastName", event.target.value)}
               required
             />
           </div>
@@ -107,30 +110,18 @@ export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouS
             <label htmlFor="reservation-date-of-birth">
               Date of birth <span aria-hidden="true">*</span>
             </label>
-            <div className="date-of-birth-control">
-              <input
-                id="reservation-date-of-birth"
-                name="dateOfBirth"
-                type="text"
-                inputMode="numeric"
-                autoComplete="bday"
-                placeholder="DD/MM/YYYY"
-                maxLength={10}
-                value={values.dateOfBirth}
-                onChange={(event) => update("dateOfBirth", formatTypedDate(event.target.value))}
-                required
-              />
-              <span className="calendar-icon" aria-hidden="true" />
-              <input
-                className="native-date-picker"
-                type="date"
-                min="1900-01-01"
-                max={today}
-                value={isoFromDisplay(values.dateOfBirth)}
-                onChange={(event) => update("dateOfBirth", displayFromIso(event.target.value))}
-                aria-label="Choose date of birth"
-              />
-            </div>
+            <input
+              id="reservation-date-of-birth"
+              name="dateOfBirth"
+              type="text"
+              inputMode="numeric"
+              autoComplete="bday"
+              placeholder="DD/MM/YYYY"
+              maxLength={10}
+              value={values.dateOfBirth}
+              onChange={(event) => update("dateOfBirth", formatTypedDate(event.target.value))}
+              required
+            />
           </div>
 
           <div className="reservation-field">

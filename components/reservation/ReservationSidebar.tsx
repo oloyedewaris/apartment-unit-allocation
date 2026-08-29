@@ -29,7 +29,7 @@ interface ReservationSidebarProps {
   contacts: SalesContact[];
 }
 
-const emptyAboutYou: AboutYouValues = { fullName: "", dateOfBirth: "", maritalStatus: "", gender: "", education: "" };
+const emptyAboutYou: AboutYouValues = { firstName: "", lastName: "", dateOfBirth: "", maritalStatus: "", gender: "", education: "" };
 const emptyNextOfKin: NextOfKinValues = { fullName: "", email: "", countryCode: "+234", phoneNumber: "", relationship: "", residentialAddress: "" };
 
 export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl, salesEmail, salesSubject, contacts }: ReservationSidebarProps) {
@@ -163,7 +163,7 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
           propertyName={propertyName}
           unitNumber={unitNumber}
           email={email}
-          reservedBy={aboutYou.fullName}
+          reservedBy={`${aboutYou.firstName} ${aboutYou.lastName}`.trim()}
           price={price}
           plan={selectedPlan}
           onBackToUnit={returnToUnit}

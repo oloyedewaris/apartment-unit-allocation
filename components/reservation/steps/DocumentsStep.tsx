@@ -129,9 +129,6 @@ export function DocumentsStep({ files, onChange, onBack, onProceed }: DocumentsS
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
-        <button type="button" className="reservation-back-link" onClick={onBack}>
-          <span aria-hidden="true">←</span> Back
-        </button>
         <p>
           Step 7 of 7 <span aria-hidden="true">·</span> Documents
         </p>
@@ -156,7 +153,7 @@ export function DocumentsStep({ files, onChange, onBack, onProceed }: DocumentsS
           />
           <UploadField
             id="utility-bill"
-            label="Utility bill"
+            label="Proof of residence"
             required
             hint="Dated within the last three months"
             file={files.utilityBill}
