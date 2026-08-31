@@ -171,7 +171,7 @@ export function DocumentsStep({ loading, files, onChange, onBack, onProceed }: D
           Back
         </button>
         <button type="button" className="continue-action" disabled={!complete || loading} aria-busy={loading} onClick={onProceed}>
-          <ReservationActionContent loading={loading} label="Proceed to summary" loadingLabel="Uploading..." />
+          <ReservationActionContent loading={loading} label="Proceed" loadingLabel="Uploading..." />
         </button>
       </footer>
     </div>

@@ -94,7 +94,6 @@ export function ReservationSuccess({ success, propertyName, unitNumber, email, r
           Open email <span aria-hidden="true">→</span>
         </a>
         <p>
-          Email not arrived? <a href={`mailto:${email}`}>Resend to {email}</a> or{" "}
           <button type="button" onClick={onBackToUnit}>
             start again
           </button>
