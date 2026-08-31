@@ -1,3 +1,5 @@
+import { ReservationActionContent } from "../ReservationActionContent";
+
 export interface AboutYouValues {
   firstName: string;
   lastName: string;
@@ -12,19 +14,12 @@ interface AboutYouStepProps {
   onChange(values: AboutYouValues): void;
   onBack(): void;
   onContinue(): void;
-  loading: boolean
+  loading: boolean;
 }
 
-const maritalStatuses = ["Married", "Single", "Divorced", "Widowed", "Rather not say",];
+const maritalStatuses = ["Married", "Single", "Divorced", "Widowed", "Rather not say"];
 const genders = ["Female", "Male", "Prefer not to say"];
-const educationLevels = [
-  "High School Diploma",
-  `Bachelor's Degree`,
-  "Post-Secondary Certificate",
-  "College",
-  `Master's Degree`,
-  "Ph.D",
-];
+const educationLevels = ["High School Diploma", `Bachelor's Degree`, "Post-Secondary Certificate", "College", `Master's Degree`, "Ph.D"];
 
 function formatTypedDate(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -127,7 +122,12 @@ export function AboutYouStep({ loading, values, onChange, onBack, onContinue }: 
             <label htmlFor="reservation-marital-status">
               Marital status <span aria-hidden="true">*</span>
             </label>
-            <select id="reservation-marital-status" value={values.maritalStatus?.toLowerCase()} onChange={(event) => update("maritalStatus", event.target.value)} required>
+            <select
+              id="reservation-marital-status"
+              value={values.maritalStatus?.toLowerCase()}
+              onChange={(event) => update("maritalStatus", event.target.value)}
+              required
+            >
               <option value="">Select</option>
               {maritalStatuses.map((status) => (
                 <option key={status} value={status?.toLowerCase()}>
@@ -171,8 +171,8 @@ export function AboutYouStep({ loading, values, onChange, onBack, onContinue }: 
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!complete} onClick={onContinue}>
-          Continue <span aria-hidden="true">→</span>
+        <button type="button" className="continue-action" disabled={!complete || loading} aria-busy={loading} onClick={onContinue}>
+          <ReservationActionContent loading={loading} label="Continue" loadingLabel="Saving..." />
         </button>
       </footer>
     </div>

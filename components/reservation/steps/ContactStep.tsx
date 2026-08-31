@@ -1,10 +1,12 @@
+import { ReservationActionContent } from "../ReservationActionContent";
+
 interface ContactStepProps {
   unitNumber: string;
   email: string;
   onEmailChange(email: string): void;
   onBack(): void;
   onSendCode(): void;
-  loading: boolean
+  loading: boolean;
 }
 
 function isValidEmail(email: string) {
@@ -52,8 +54,8 @@ export function ContactStep({ loading, unitNumber, email, onEmailChange, onBack,
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!validEmail} onClick={onSendCode}>
-          Send code <span aria-hidden="true">→</span>
+        <button type="button" className="continue-action" disabled={!validEmail || loading} aria-busy={loading} onClick={onSendCode}>
+          <ReservationActionContent loading={loading} label="Send code" loadingLabel="Sending..." />
         </button>
       </footer>
     </div>

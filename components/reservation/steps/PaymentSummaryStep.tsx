@@ -51,7 +51,7 @@ export function PaymentSummaryStep({ fetchedUnit, plan, acceptedTerms, onAccepte
             </div>
           )}
 
-          {!isOutright && (
+          {!isOutright && plan?.payment_frequency !== 'flexible' && (
             <div>
               <dt>{plan?.payment_frequency
                 ? plan?.payment_frequency

@@ -1,6 +1,7 @@
 "use client";
 
 import { type DragEvent, type ReactNode, useState } from "react";
+import { ReservationActionContent } from "../ReservationActionContent";
 
 export interface DocumentFiles {
   governmentId: File | null;
@@ -12,7 +13,7 @@ interface DocumentsStepProps {
   onChange(files: DocumentFiles): void;
   onBack(): void;
   onProceed(): void;
-  loading: boolean
+  loading: boolean;
 }
 
 interface UploadFieldProps {
@@ -169,8 +170,8 @@ export function DocumentsStep({ loading, files, onChange, onBack, onProceed }: D
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!complete} onClick={onProceed}>
-          Proceed to summary <span aria-hidden="true">→</span>
+        <button type="button" className="continue-action" disabled={!complete || loading} aria-busy={loading} onClick={onProceed}>
+          <ReservationActionContent loading={loading} label="Proceed to summary" loadingLabel="Uploading..." />
         </button>
       </footer>
     </div>

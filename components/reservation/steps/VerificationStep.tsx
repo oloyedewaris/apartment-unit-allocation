@@ -1,6 +1,7 @@
 "use client";
 
 import { type ClipboardEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { ReservationActionContent } from "../ReservationActionContent";
 
 interface VerificationStepProps {
   email: string;
@@ -10,7 +11,7 @@ interface VerificationStepProps {
   onBack(): void;
   onResend(): void;
   onVerify(): void;
-  loading: boolean
+  loading: boolean;
 }
 
 const CODE_LENGTH = 6;
@@ -108,8 +109,8 @@ export function VerificationStep({ loading, email, code, onCodeChange, onChangeA
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!complete} onClick={onVerify}>
-          Verify <span aria-hidden="true">→</span>
+        <button type="button" className="continue-action" disabled={!complete || loading} aria-busy={loading} onClick={onVerify}>
+          <ReservationActionContent loading={loading} label="Verify" loadingLabel="Verifying..." />
         </button>
       </footer>
     </div>

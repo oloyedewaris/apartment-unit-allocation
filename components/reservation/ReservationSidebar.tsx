@@ -14,7 +14,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchBundlePaymentPlans, fetchProjectBundles, makeEquityPayment } from "@/lib/api/investment";
 import { PaymentPlan } from "./payment-plans";
 import { useToast } from "@chakra-ui/react";
-import { loginWithOTP, requestOTPForEmailVerification } from "@/lib/api/auth";
+import { loginWithOTP, registerUser, requestOTPForEmailVerification } from "@/lib/api/auth";
 import { ESUB_SESSION_KEY, TOKEN_SESSION_KEY } from "@/lib/constants/auth-keys";
 import { setSession } from "@/lib/session/sessionmanagers";
 import { getProfileData, updateProfile } from "@/lib/api/profile";
@@ -57,8 +57,10 @@ export function ReservationSidebar({
 }: ReservationSidebarProps) {
   const project = esubDetails?.project;
 
-  const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(2878) });
-  const fetchedUnit = bundleQuery?.data?.data?.results?.[7];
+  const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(project?.id), enabled: !!project?.id });
+  const allUnits = bundleQuery?.data?.data?.results
+  const fetchedUnit = allUnits?.find((unit: any) => unit.id === unitId)
+  console.log('fetchedUnit', fetchedUnit)
 
   const paymentPlansQuery = useQuery({ queryKey: ["fetchBundlePaymentPlans"], queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id), enabled: !!fetchedUnit?.id });
   const fetchedPlans = paymentPlansQuery?.data?.data?.results as PaymentPlan[];
@@ -82,6 +84,7 @@ export function ReservationSidebar({
     if (planId !== selectedPlanId) setAcceptedTerms(false);
     setSelectedPlanId(planId);
   };
+  const [newUser, setNewUser] = useState(false)
   const returnToUnit = () => {
     setStep("overview");
     setSelectedPlanId(null);
@@ -94,7 +97,7 @@ export function ReservationSidebar({
   };
 
   const sendCodeMutation = useMutation({
-    mutationFn: () => requestOTPForEmailVerification({ email: email?.trim() }),
+    mutationFn: () => requestOTPForEmailVerification({ email: email?.trim(), verify: true }),
     onSuccess: (res) => {
       toast({
         status: "success",
@@ -116,15 +119,29 @@ export function ReservationSidebar({
   const updateProfileMutation = useMutation({
     mutationFn: async (field: "next-of-kin" | "documents" | "success") => {
       if (field === "next-of-kin")
-        await updateProfile({
-          first_name: aboutYou.firstName,
-          last_name: aboutYou.lastName,
-          date_of_birth: aboutYou.dateOfBirth?.split('/')?.reverse()?.join('-'),
-          marital_status: aboutYou.maritalStatus,
-          gender: aboutYou.gender,
-          highest_education: aboutYou.education,
-          profile_details: true
-        })
+        if (newUser) {
+          const storeName = store_name()
+          await registerUser({
+            store_name: storeName,
+            email: email,
+            first_name: aboutYou.firstName,
+            last_name: aboutYou.lastName,
+            date_of_birth: aboutYou.dateOfBirth,
+            marital_status: aboutYou.maritalStatus,
+            gender: aboutYou.gender,
+            highest_education: aboutYou.education,
+          });
+        } else {
+          await updateProfile({
+            first_name: aboutYou.firstName,
+            last_name: aboutYou.lastName,
+            date_of_birth: aboutYou.dateOfBirth?.split('/')?.reverse()?.join('-'),
+            marital_status: aboutYou.maritalStatus,
+            gender: aboutYou.gender,
+            highest_education: aboutYou.education,
+            profile_details: true
+          })
+        }
 
       if (field === "documents")
         await updateProfile({
@@ -163,7 +180,9 @@ export function ReservationSidebar({
     },
     onSuccess: async (field) => {
       setStep(field)
-      paymentMutation.mutate()
+      setNewUser(false)
+      if (field === 'success')
+        paymentMutation.mutate()
     },
     onError: (err: any) => {
       toast({
@@ -260,6 +279,7 @@ export function ReservationSidebar({
     onError: (err: any) => {
       if (err?.response?.status === 404) {
         setStep("about-you");
+        setNewUser(true)
       } else {
         return toast({
           description: `${err?.response?.data?.message || "There was an error authenticating this account. Please try again"}`,
@@ -330,7 +350,7 @@ export function ReservationSidebar({
           onChangeAddress={() => setStep("contact")}
           onBack={() => setStep("contact")}
           onResend={() => sendCodeMutation.mutate()}
-          loading={verifyCodeMutation.isPending}
+          loading={verifyCodeMutation.isPending || settingsMutation.isPending || nokSettingsMutation.isPending || docsSettingsMutation.isPending}
           onVerify={() => {
             if (/^\d{6}$/.test(verificationCode))
               verifyCodeMutation.mutate()

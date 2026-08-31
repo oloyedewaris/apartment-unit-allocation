@@ -1,3 +1,5 @@
+import { ReservationActionContent } from "../ReservationActionContent";
+
 export interface NextOfKinValues {
   firstName: string;
   lastName: string;
@@ -13,7 +15,7 @@ interface NextOfKinStepProps {
   onChange(values: NextOfKinValues): void;
   onBack(): void;
   onContinue(): void;
-  loading: boolean
+  loading: boolean;
 }
 
 const countryCodes = [
@@ -29,7 +31,7 @@ const countryCodes = [
   { code: "+86", country: "China" },
 ];
 
-const relationships = ["Father", "Mother", "Brother", "Sister", "Partner"]
+const relationships = ["Father", "Mother", "Brother", "Sister", "Partner"];
 
 function isValidEmail(email: string) {
   return !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
@@ -68,7 +70,7 @@ export function NextOfKinStep({ loading, values, onChange, onBack, onContinue }:
         <div className="next-of-kin-fields">
           <div className="reservation-field">
             <label htmlFor="next-of-kin-name">
-              Full name <span aria-hidden="true">*</span>
+              First name <span aria-hidden="true">*</span>
             </label>
             <input
               id="next-of-kin-name"
@@ -84,7 +86,7 @@ export function NextOfKinStep({ loading, values, onChange, onBack, onContinue }:
 
           <div className="reservation-field">
             <label htmlFor="next-of-kin-name">
-              Full name <span aria-hidden="true">*</span>
+              Last name <span aria-hidden="true">*</span>
             </label>
             <input
               id="next-of-kin-name"
@@ -142,7 +144,12 @@ export function NextOfKinStep({ loading, values, onChange, onBack, onContinue }:
             <label htmlFor="next-of-kin-relationship">
               Relationship <span aria-hidden="true">*</span>
             </label>
-            <select id="next-of-kin-relationship" value={values.relationship?.toLowerCase()} onChange={(event) => update("relationship", event.target.value)} required>
+            <select
+              id="next-of-kin-relationship"
+              value={values.relationship?.toLowerCase()}
+              onChange={(event) => update("relationship", event.target.value)}
+              required
+            >
               <option value="">Select</option>
               {relationships.map((relationship) => (
                 <option key={relationship} value={relationship?.toLowerCase()}>
@@ -174,8 +181,8 @@ export function NextOfKinStep({ loading, values, onChange, onBack, onContinue }:
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!complete} onClick={onContinue}>
-          Continue <span aria-hidden="true">→</span>
+        <button type="button" className="continue-action" disabled={!complete || loading} aria-busy={loading} onClick={onContinue}>
+          <ReservationActionContent loading={loading} label="Continue" loadingLabel="Saving..." />
         </button>
       </footer>
     </div>

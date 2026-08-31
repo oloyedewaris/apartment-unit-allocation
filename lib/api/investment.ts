@@ -3,7 +3,7 @@ import { business_id, store_name } from "../constants/store-name";
 import { axiosInstance } from "./axiosInstance";
 
 export async function fetchProjectBundles(projectId: number, pageParam?: string) {
-  return await axiosInstance.get(`${BaseURL}/investment/project-bundles/?project_id=${projectId}&${pageParam ? pageParam : ""}`);
+  return await axiosInstance.get(`${BaseURL}/investment/project-bundles/?project_id=${projectId}${pageParam ? `&${pageParam}` : ""}`);
 }
 
 export async function fetchBundlePaymentPlans(bundleId: number) {

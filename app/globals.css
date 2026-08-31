@@ -2110,6 +2110,35 @@ a {
     cursor: not-allowed
 }
 
+.reservation-step-actions .continue-action[aria-busy="true"]:disabled {
+    border-color: #14161a;
+    background: #14161a;
+    cursor: wait
+}
+
+.reservation-button-loading {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px
+}
+
+.reservation-button-spinner {
+    width: 15px;
+    aspect-ratio: 1;
+    border: 2px solid #ffffff59;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: reservation-button-spin .7s linear infinite
+}
+
+@keyframes reservation-button-spin {
+    to {
+        transform: rotate(1turn)
+    }
+}
+
 .payment-summary-scroll {
     padding-top: 24px
 }
