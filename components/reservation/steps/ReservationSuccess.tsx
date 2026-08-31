@@ -44,7 +44,7 @@ export function ReservationSuccess({ success, propertyName, unitNumber, email, r
   const reference = reservationReference(propertyName, unitNumber, reservedBy);
 
   return !success ? (
-    <Center w='full' minH={'30vh'}>
+    <Center w='full' minH={'90vh'}>
       <Loader />
     </Center>
   ) : (

@@ -267,8 +267,13 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
       return "";
     };
 
+    const reservationFlowActive = () => document.body.classList.contains("reservation-flow-active");
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (!tourEnabled) return;
+      if (!tourEnabled || reservationFlowActive()) {
+        pressed.clear();
+        return;
+      }
       const direction = keyDirection(event.key);
       if (!direction) return;
       event.preventDefault();
@@ -535,6 +540,7 @@ export function UnitModelViewer({ asset, floor, startInTour = false }: { asset: 
             destinationRing.visible = false;
           }
         }
+        if (reservationFlowActive()) pressed.clear();
         const forwardAmount = Number(pressed.has("forward")) - Number(pressed.has("backward"));
         const rightAmount = Number(pressed.has("right")) - Number(pressed.has("left"));
         if (forwardAmount || rightAmount) {

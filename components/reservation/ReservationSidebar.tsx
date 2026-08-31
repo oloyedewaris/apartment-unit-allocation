@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { paymentPlans } from "./payment-plans";
 import { AboutYouStep, type AboutYouValues } from "./steps/AboutYouStep";
 import { ContactStep } from "./steps/ContactStep";
@@ -41,7 +41,15 @@ interface ReservationSidebarProps {
 }
 
 const emptyAboutYou: AboutYouValues = { firstName: "", lastName: "", dateOfBirth: "", maritalStatus: "", gender: "", education: "" };
-const emptyNextOfKin: NextOfKinValues = { firstName: "", lastName: "", email: "", countryCode: "+234", phoneNumber: "", relationship: "", residentialAddress: "" };
+const emptyNextOfKin: NextOfKinValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  countryCode: "+234",
+  phoneNumber: "",
+  relationship: "",
+  residentialAddress: "",
+};
 
 export function ReservationSidebar({
   esubDetails,
@@ -56,17 +64,28 @@ export function ReservationSidebar({
   const project = esubDetails?.project;
 
   const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(project?.id), enabled: !!project?.id });
-  const allUnits = bundleQuery?.data?.data?.results
-  const fetchedUnit = allUnits?.find((unit: any) => unit.id === unitId)
+  const allUnits = bundleQuery?.data?.data?.results;
+  const fetchedUnit = allUnits?.find((unit: any) => unit.id === unitId);
 
-  const paymentPlansQuery = useQuery({ queryKey: ["fetchBundlePaymentPlans"], queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id), enabled: !!fetchedUnit?.id });
+  const paymentPlansQuery = useQuery({
+    queryKey: ["fetchBundlePaymentPlans"],
+    queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id),
+    enabled: !!fetchedUnit?.id,
+  });
   const fetchedPlans = paymentPlansQuery?.data?.data?.results as PaymentPlan[];
   const paymentPlans = fetchedPlans?.filter((plan) => !!plan.id);
 
-  const toast = useToast()
+  const toast = useToast();
   const [step, setStep] = useState<
     "overview" | "payment-plan" | "payment-summary" | "contact" | "verification" | "about-you" | "next-of-kin" | "documents" | "success"
   >("overview");
+
+  useEffect(() => {
+    const reservationActive = step !== "overview";
+    document.body.classList.toggle("reservation-flow-active", reservationActive);
+
+    return () => document.body.classList.remove("reservation-flow-active");
+  }, [step]);
 
   const [success, setSuccess] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -76,12 +95,12 @@ export function ReservationSidebar({
   const [aboutYou, setAboutYou] = useState<AboutYouValues>(emptyAboutYou);
   const [nextOfKin, setNextOfKin] = useState<NextOfKinValues>(emptyNextOfKin);
   const [documents, setDocuments] = useState<DocumentFiles>({ governmentId: null, utilityBill: null });
-  const selectedPlan = selectedPlanId === 'outright' ? fetchedUnit : paymentPlans?.find((plan) => plan.id === selectedPlanId);
+  const selectedPlan = selectedPlanId === "outright" ? fetchedUnit : paymentPlans?.find((plan) => plan.id === selectedPlanId);
   const selectPaymentPlan = (planId: string) => {
     if (planId !== selectedPlanId) setAcceptedTerms(false);
     setSelectedPlanId(planId);
   };
-  const [newUser, setNewUser] = useState(false)
+  const [newUser, setNewUser] = useState(false);
   const returnToUnit = () => {
     setStep("overview");
     setSelectedPlanId(null);
@@ -93,19 +112,16 @@ export function ReservationSidebar({
     setDocuments({ governmentId: null, utilityBill: null });
   };
 
-  const docParam = !selectedPlan?.initial_deposit_in_value
-    ? `unit=${fetchedUnit?.id}&purpose=outright`
-    : `plan=${selectedPlan?.id}&purpose=paymentplan`;
-  const queryEnabled = !selectedPlan?.initial_deposit_in_value ? fetchedUnit?.id : selectedPlan?.id
+  const docParam = !selectedPlan?.initial_deposit_in_value ? `unit=${fetchedUnit?.id}&purpose=outright` : `plan=${selectedPlan?.id}&purpose=paymentplan`;
+  const queryEnabled = !selectedPlan?.initial_deposit_in_value ? fetchedUnit?.id : selectedPlan?.id;
 
   const docQuery = useQuery({
     queryKey: ["project-documents", docParam],
     queryFn: () => fetchProjectDocumentsQuery(docParam),
     enabled: !!queryEnabled,
   });
-  const docResults = docQuery?.data?.data?.results
-  const documentUrl =
-    docResults?.[0]?.document_file ?? docResults?.[0]?.document_url ?? null;
+  const docResults = docQuery?.data?.data?.results;
+  const documentUrl = docResults?.[0]?.document_file ?? docResults?.[0]?.document_url ?? null;
 
   const sendCodeMutation = useMutation({
     mutationFn: () => requestOTPForEmailVerification({ email: email?.trim(), verify: true }),
@@ -126,7 +142,7 @@ export function ReservationSidebar({
     mutationFn: async (field: "next-of-kin" | "documents" | "success") => {
       if (field === "next-of-kin")
         if (newUser) {
-          const storeName = store_name()
+          const storeName = store_name();
           const res = await registerUser({
             store_name: storeName,
             email: email,
@@ -137,20 +153,17 @@ export function ReservationSidebar({
             gender: aboutYou.gender,
             highest_education: aboutYou.education,
           });
-          if (res?.data?.token)
-            sessionStorage.setItem('token', res?.data?.token);
-
-
+          if (res?.data?.token) sessionStorage.setItem("token", res?.data?.token);
         } else {
           await updateProfile({
             first_name: aboutYou.firstName,
             last_name: aboutYou.lastName,
-            date_of_birth: aboutYou.dateOfBirth?.split('/')?.reverse()?.join('-'),
+            date_of_birth: aboutYou.dateOfBirth?.split("/")?.reverse()?.join("-"),
             marital_status: aboutYou.maritalStatus,
             gender: aboutYou.gender,
             highest_education: aboutYou.education,
-            profile_details: true
-          })
+            profile_details: true,
+          });
         }
 
       if (field === "documents")
@@ -161,8 +174,8 @@ export function ReservationSidebar({
           phone: nextOfKin?.phoneNumber,
           relationship: nextOfKin?.relationship,
           residential_address: nextOfKin?.residentialAddress,
-          next_of_kin: true
-        })
+          next_of_kin: true,
+        });
 
       if (field === "success") {
         const strip = stripDataUrlBase64Prefix;
@@ -182,20 +195,18 @@ export function ReservationSidebar({
               utility_bill: await encodeFileToBase64(documents.utilityBill as File).then(strip),
             },
           ],
-          documents: true
-        })
+          documents: true,
+        });
       }
 
-      return field
+      return field;
     },
     onSuccess: async (field) => {
-
-
-      setStep(field)
-      setNewUser(false)
-      if (field === 'success') {
-        const storename = store_name()
-        const businessId = business_id()
+      setStep(field);
+      setNewUser(false);
+      if (field === "success") {
+        const storename = store_name();
+        const businessId = business_id();
         const objToSubmit = {
           amount_to_pay: selectedPlan?.initial_deposit_in_value ? selectedPlan?.initial_deposit_in_value : selectedPlan?.price,
           bundle_id: fetchedUnit.id,
@@ -206,10 +217,10 @@ export function ReservationSidebar({
           redirect_url: `https://${storename}.6787878.com`,
           store_name: storename,
           type: "WHOLE",
-          allocation_id: allocationId
-        }
+          allocation_id: allocationId,
+        };
 
-        paymentMutation.mutate(objToSubmit)
+        paymentMutation.mutate(objToSubmit);
       }
     },
     onError: (err: any) => {
@@ -223,10 +234,10 @@ export function ReservationSidebar({
 
   const paymentMutation = useMutation({
     mutationFn: async (formData: Record<string, unknown>) => {
-      return await makeEquityPayment(formData)
+      return await makeEquityPayment(formData);
     },
     onSuccess: () => {
-      setSuccess(true)
+      setSuccess(true);
     },
     onError: (err: any) => {
       toast({
@@ -238,9 +249,9 @@ export function ReservationSidebar({
   });
 
   const docsSettingsMutation = useMutation({
-    mutationFn: () => getProfileData({ documents: true, }),
+    mutationFn: () => getProfileData({ documents: true }),
     onSuccess: (res) => {
-      const { } = res?.data?.data;
+      const {} = res?.data?.data;
       setStep("about-you");
     },
   });
@@ -257,9 +268,9 @@ export function ReservationSidebar({
         phoneNumber: phone,
         relationship: relationship,
         residentialAddress: residential_address,
-      })
+      });
 
-      docsSettingsMutation.mutate()
+      docsSettingsMutation.mutate();
     },
   });
 
@@ -270,30 +281,29 @@ export function ReservationSidebar({
       setAboutYou({
         firstName: first_name,
         lastName: last_name,
-        dateOfBirth: date_of_birth?.split('-')?.reverse()?.join('/'),
+        dateOfBirth: date_of_birth?.split("-")?.reverse()?.join("/"),
         maritalStatus: marital_status,
         gender: gender,
-        education: highest_education
-      })
-      nokSettingsMutation.mutate()
+        education: highest_education,
+      });
+      nokSettingsMutation.mutate();
     },
   });
 
   const verifyCodeMutation = useMutation({
     mutationFn: () => loginWithOTP({ email, code: verificationCode }),
     onSuccess: (res) => {
-      console.log('res?.data', res?.data)
+      console.log("res?.data", res?.data);
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      if (res?.data?.token)
-        sessionStorage.setItem('token', res?.data?.token);
+      if (res?.data?.token) sessionStorage.setItem("token", res?.data?.token);
 
       setTimeout(() => {
-        settingsMutation.mutate()
+        settingsMutation.mutate();
       }, 1000);
     },
     onError: (err: any) => {
       if (err?.response?.status === 404) {
-        setNewUser(true)
+        setNewUser(true);
         setTimeout(() => {
           setStep("about-you");
         }, 1000);
@@ -374,8 +384,7 @@ export function ReservationSidebar({
           onResend={() => sendCodeMutation.mutate()}
           loading={verifyCodeMutation.isPending || settingsMutation.isPending || nokSettingsMutation.isPending || docsSettingsMutation.isPending}
           onVerify={() => {
-            if (/^\d{6}$/.test(verificationCode))
-              verifyCodeMutation.mutate()
+            if (/^\d{6}$/.test(verificationCode)) verifyCodeMutation.mutate();
           }}
         />
       </aside>
@@ -384,21 +393,39 @@ export function ReservationSidebar({
   if (step === "about-you") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <AboutYouStep values={aboutYou} onChange={setAboutYou} onBack={() => setStep("verification")} loading={updateProfileMutation.isPending} onContinue={() => updateProfileMutation.mutate("next-of-kin")} />
+        <AboutYouStep
+          values={aboutYou}
+          onChange={setAboutYou}
+          onBack={() => setStep("verification")}
+          loading={updateProfileMutation.isPending}
+          onContinue={() => updateProfileMutation.mutate("next-of-kin")}
+        />
       </aside>
     );
   }
   if (step === "next-of-kin") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <NextOfKinStep values={nextOfKin} onChange={setNextOfKin} onBack={() => setStep("about-you")} loading={updateProfileMutation.isPending} onContinue={() => updateProfileMutation.mutate("documents")} />
+        <NextOfKinStep
+          values={nextOfKin}
+          onChange={setNextOfKin}
+          onBack={() => setStep("about-you")}
+          loading={updateProfileMutation.isPending}
+          onContinue={() => updateProfileMutation.mutate("documents")}
+        />
       </aside>
     );
   }
   if (step === "documents") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <DocumentsStep files={documents} onChange={setDocuments} onBack={() => setStep("next-of-kin")} loading={updateProfileMutation.isPending} onProceed={() => updateProfileMutation.mutate("success")} />
+        <DocumentsStep
+          files={documents}
+          onChange={setDocuments}
+          onBack={() => setStep("next-of-kin")}
+          loading={updateProfileMutation.isPending}
+          onProceed={() => updateProfileMutation.mutate("success")}
+        />
       </aside>
     );
   }
