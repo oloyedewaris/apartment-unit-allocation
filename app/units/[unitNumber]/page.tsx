@@ -132,11 +132,10 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
       <ReservationSidebar
         esubDetails={esubDetails}
         unitId={unit?.unit}
+        allocationId={unit?.id}
         unitNumber={unit.number}
         propertyName={unit.house.name}
-        price={Number(unit.discounted_price_raw || unit.price_raw || 0)}
         available={!unit.allocated}
-        salesEmail={salesEmail}
         salesSubject={salesSubject}
         contacts={salesData}
       />

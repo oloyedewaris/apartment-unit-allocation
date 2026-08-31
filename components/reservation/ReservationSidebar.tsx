@@ -34,9 +34,8 @@ interface ReservationSidebarProps {
   unitId?: number;
   unitNumber: string;
   propertyName: string;
-  price: number;
+  allocationId: number;
   available: boolean;
-  salesEmail: string;
   salesSubject: string;
   contacts: SalesContact[];
 }
@@ -49,9 +48,8 @@ export function ReservationSidebar({
   unitId,
   unitNumber,
   propertyName,
-  price,
+  allocationId,
   available,
-  salesEmail,
   salesSubject,
   contacts,
 }: ReservationSidebarProps) {
@@ -129,7 +127,7 @@ export function ReservationSidebar({
       if (field === "next-of-kin")
         if (newUser) {
           const storeName = store_name()
-          await registerUser({
+          const res = await registerUser({
             store_name: storeName,
             email: email,
             first_name: aboutYou.firstName,
@@ -139,6 +137,10 @@ export function ReservationSidebar({
             gender: aboutYou.gender,
             highest_education: aboutYou.education,
           });
+          if (res?.data?.token)
+            sessionStorage.setItem('token', res?.data?.token);
+
+
         } else {
           await updateProfile({
             first_name: aboutYou.firstName,
@@ -187,10 +189,28 @@ export function ReservationSidebar({
       return field
     },
     onSuccess: async (field) => {
+
+
       setStep(field)
       setNewUser(false)
-      if (field === 'success')
-        paymentMutation.mutate()
+      if (field === 'success') {
+        const storename = store_name()
+        const businessId = business_id()
+        const objToSubmit = {
+          amount_to_pay: selectedPlan?.initial_deposit_in_value ? selectedPlan?.initial_deposit_in_value : selectedPlan?.price,
+          bundle_id: fetchedUnit.id,
+          business_id: businessId,
+          from_store: true,
+          payment_option: "virtual_bank",
+          paymentplan_id: selectedPlan?.initial_deposit_in_value ? selectedPlan?.id : undefined,
+          redirect_url: `https://${storename}.6787878.com`,
+          store_name: storename,
+          type: "WHOLE",
+          allocation_id: allocationId
+        }
+
+        paymentMutation.mutate(objToSubmit)
+      }
     },
     onError: (err: any) => {
       toast({
@@ -202,22 +222,8 @@ export function ReservationSidebar({
   });
 
   const paymentMutation = useMutation({
-    mutationFn: async () => {
-      const storename = store_name()
-      const businessId = business_id()
-      const objToSubmit = {
-        amount_to_pay: selectedPlan?.initial_deposit_in_value ? selectedPlan?.initial_deposit_in_value : selectedPlan?.price,
-        bundle_id: fetchedUnit.id,
-        business_id: businessId,
-        from_store: true,
-        payment_option: "virtual_bank",
-        paymentplan_id: selectedPlan?.initial_deposit_in_value ? selectedPlan?.id : undefined,
-        redirect_url: `https://${storename}.6787878.com`,
-        store_name: storename,
-        type: "WHOLE"
-      }
-
-      return makeEquityPayment(objToSubmit);
+    mutationFn: async (formData: Record<string, unknown>) => {
+      return await makeEquityPayment(formData)
     },
     onSuccess: () => {
       setSuccess(true)
@@ -257,7 +263,6 @@ export function ReservationSidebar({
     },
   });
 
-
   const settingsMutation = useMutation({
     mutationFn: () => getProfileData({ profile: true }),
     onSuccess: (res) => {
@@ -277,8 +282,10 @@ export function ReservationSidebar({
   const verifyCodeMutation = useMutation({
     mutationFn: () => loginWithOTP({ email, code: verificationCode }),
     onSuccess: (res) => {
+      console.log('res?.data', res?.data)
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      sessionStorage.setItem('token', res?.data?.token);
+      if (res?.data?.token)
+        sessionStorage.setItem('token', res?.data?.token);
 
       setTimeout(() => {
         settingsMutation.mutate()
