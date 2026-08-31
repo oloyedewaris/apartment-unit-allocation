@@ -12,20 +12,18 @@ interface AboutYouStepProps {
   onChange(values: AboutYouValues): void;
   onBack(): void;
   onContinue(): void;
+  loading: boolean
 }
 
-const maritalStatuses = ["Single", "Married", "Separated", "Divorced", "Widowed", "Prefer not to say"];
+const maritalStatuses = ["Married", "Single", "Divorced", "Widowed", "Rather not say",];
 const genders = ["Female", "Male", "Prefer not to say"];
 const educationLevels = [
-  "No formal education",
-  "Primary education",
-  "Secondary education",
-  "Diploma or vocational qualification",
-  "Bachelor's degree",
-  "Master's degree",
-  "Doctorate",
-  "Other",
-  "Prefer not to say",
+  "High School Diploma",
+  `Bachelor's Degree`,
+  "Post-Secondary Certificate",
+  "College",
+  `Master's Degree`,
+  "Ph.D",
 ];
 
 function formatTypedDate(value: string) {
@@ -52,13 +50,14 @@ function validDateOfBirth(value: string) {
   return date >= earliest && date.getTime() <= Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 }
 
-export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouStepProps) {
+export function AboutYouStep({ loading, values, onChange, onBack, onContinue }: AboutYouStepProps) {
   const update = <Key extends keyof AboutYouValues>(key: Key, value: AboutYouValues[Key]) => onChange({ ...values, [key]: value });
   const complete =
     values.firstName.trim().length >= 2 &&
     values.lastName.trim().length >= 2 &&
     validDateOfBirth(values.dateOfBirth) &&
     Boolean(values.maritalStatus && values.gender && values.education);
+
   return (
     <div className="reservation-step">
       <header className="reservation-step-header">
@@ -128,10 +127,10 @@ export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouS
             <label htmlFor="reservation-marital-status">
               Marital status <span aria-hidden="true">*</span>
             </label>
-            <select id="reservation-marital-status" value={values.maritalStatus} onChange={(event) => update("maritalStatus", event.target.value)} required>
+            <select id="reservation-marital-status" value={values.maritalStatus?.toLowerCase()} onChange={(event) => update("maritalStatus", event.target.value)} required>
               <option value="">Select</option>
               {maritalStatuses.map((status) => (
-                <option key={status} value={status}>
+                <option key={status} value={status?.toLowerCase()}>
                   {status}
                 </option>
               ))}
@@ -142,10 +141,10 @@ export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouS
             <label htmlFor="reservation-gender">
               Gender <span aria-hidden="true">*</span>
             </label>
-            <select id="reservation-gender" value={values.gender} onChange={(event) => update("gender", event.target.value)} required>
+            <select id="reservation-gender" value={values.gender?.toLowerCase()} onChange={(event) => update("gender", event.target.value)} required>
               <option value="">Select</option>
               {genders.map((gender) => (
-                <option key={gender} value={gender}>
+                <option key={gender} value={gender?.toLowerCase()}>
                   {gender}
                 </option>
               ))}
@@ -156,10 +155,10 @@ export function AboutYouStep({ values, onChange, onBack, onContinue }: AboutYouS
             <label htmlFor="reservation-education">
               Highest level of education <span aria-hidden="true">*</span>
             </label>
-            <select id="reservation-education" value={values.education} onChange={(event) => update("education", event.target.value)} required>
+            <select id="reservation-education" value={values.education?.toLowerCase()} onChange={(event) => update("education", event.target.value)} required>
               <option value="">Select</option>
               {educationLevels.map((education) => (
-                <option key={education} value={education}>
+                <option key={education} value={education?.toLowerCase()}>
                   {education}
                 </option>
               ))}

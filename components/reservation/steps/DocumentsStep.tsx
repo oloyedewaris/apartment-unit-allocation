@@ -12,6 +12,7 @@ interface DocumentsStepProps {
   onChange(files: DocumentFiles): void;
   onBack(): void;
   onProceed(): void;
+  loading: boolean
 }
 
 interface UploadFieldProps {
@@ -122,7 +123,7 @@ function UploadField({ id, label, required, hint, file, error, onFile, onError }
   );
 }
 
-export function DocumentsStep({ files, onChange, onBack, onProceed }: DocumentsStepProps) {
+export function DocumentsStep({ loading, files, onChange, onBack, onProceed }: DocumentsStepProps) {
   const [errors, setErrors] = useState<{ governmentId: string | null; utilityBill: string | null }>({ governmentId: null, utilityBill: null });
   const complete = Boolean(files.governmentId && files.utilityBill && !errors.governmentId && !errors.utilityBill);
 

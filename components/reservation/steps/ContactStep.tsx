@@ -4,13 +4,14 @@ interface ContactStepProps {
   onEmailChange(email: string): void;
   onBack(): void;
   onSendCode(): void;
+  loading: boolean
 }
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }
 
-export function ContactStep({ unitNumber, email, onEmailChange, onBack, onSendCode }: ContactStepProps) {
+export function ContactStep({ loading, unitNumber, email, onEmailChange, onBack, onSendCode }: ContactStepProps) {
   const validEmail = isValidEmail(email);
 
   return (

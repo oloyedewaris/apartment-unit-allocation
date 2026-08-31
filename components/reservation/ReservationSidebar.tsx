@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { paymentPlans } from "./payment-plans";
+// import { paymentPlans } from "./payment-plans";
 import { AboutYouStep, type AboutYouValues } from "./steps/AboutYouStep";
 import { ContactStep } from "./steps/ContactStep";
 import { DocumentsStep, type DocumentFiles } from "./steps/DocumentsStep";
@@ -10,6 +10,16 @@ import { PaymentPlanStep } from "./steps/PaymentPlanStep";
 import { PaymentSummaryStep } from "./steps/PaymentSummaryStep";
 import { ReservationSuccess } from "./steps/ReservationSuccess";
 import { VerificationStep } from "./steps/VerificationStep";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { fetchBundlePaymentPlans, fetchProjectBundles, makeEquityPayment } from "@/lib/api/investment";
+import { PaymentPlan } from "./payment-plans";
+import { useToast } from "@chakra-ui/react";
+import { loginWithOTP, requestOTPForEmailVerification } from "@/lib/api/auth";
+import { ESUB_SESSION_KEY, TOKEN_SESSION_KEY } from "@/lib/constants/auth-keys";
+import { setSession } from "@/lib/session/sessionmanagers";
+import { getProfileData, updateProfile } from "@/lib/api/profile";
+import { encodeFileToBase64, stripDataUrlBase64Prefix } from "@/lib/constants/encode-base64";
+import { business_id, store_name } from "@/lib/constants/store-name";
 
 interface SalesContact {
   name: string;
@@ -20,22 +30,46 @@ interface SalesContact {
 }
 
 interface ReservationSidebarProps {
+  esubDetails: any;
+  unitId?: number;
   unitNumber: string;
   propertyName: string;
   price: number;
-  bookingUrl: string | null;
+  available: boolean;
   salesEmail: string;
   salesSubject: string;
   contacts: SalesContact[];
 }
 
 const emptyAboutYou: AboutYouValues = { firstName: "", lastName: "", dateOfBirth: "", maritalStatus: "", gender: "", education: "" };
-const emptyNextOfKin: NextOfKinValues = { fullName: "", email: "", countryCode: "+234", phoneNumber: "", relationship: "", residentialAddress: "" };
+const emptyNextOfKin: NextOfKinValues = { firstName: "", lastName: "", email: "", countryCode: "+234", phoneNumber: "", relationship: "", residentialAddress: "" };
 
-export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl, salesEmail, salesSubject, contacts }: ReservationSidebarProps) {
+export function ReservationSidebar({
+  esubDetails,
+  unitId,
+  unitNumber,
+  propertyName,
+  price,
+  available,
+  salesEmail,
+  salesSubject,
+  contacts,
+}: ReservationSidebarProps) {
+  const project = esubDetails?.project;
+
+  const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(2878) });
+  const fetchedUnit = bundleQuery?.data?.data?.results?.[7];
+
+  const paymentPlansQuery = useQuery({ queryKey: ["fetchBundlePaymentPlans"], queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id), enabled: !!fetchedUnit?.id });
+  const fetchedPlans = paymentPlansQuery?.data?.data?.results as PaymentPlan[];
+  const paymentPlans = fetchedPlans?.filter((plan) => !!plan.id);
+
+  const toast = useToast()
   const [step, setStep] = useState<
     "overview" | "payment-plan" | "payment-summary" | "contact" | "verification" | "about-you" | "next-of-kin" | "documents" | "success"
   >("overview");
+
+  const [success, setSuccess] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [email, setEmail] = useState("");
@@ -43,7 +77,7 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
   const [aboutYou, setAboutYou] = useState<AboutYouValues>(emptyAboutYou);
   const [nextOfKin, setNextOfKin] = useState<NextOfKinValues>(emptyNextOfKin);
   const [documents, setDocuments] = useState<DocumentFiles>({ governmentId: null, utilityBill: null });
-  const selectedPlan = paymentPlans.find((plan) => plan.id === selectedPlanId);
+  const selectedPlan = selectedPlanId === 'outright' ? fetchedUnit : paymentPlans?.find((plan) => plan.id === selectedPlanId);
   const selectPaymentPlan = (planId: string) => {
     if (planId !== selectedPlanId) setAcceptedTerms(false);
     setSelectedPlanId(planId);
@@ -59,11 +93,190 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
     setDocuments({ governmentId: null, utilityBill: null });
   };
 
+  const sendCodeMutation = useMutation({
+    mutationFn: () => requestOTPForEmailVerification({ email: email?.trim() }),
+    onSuccess: (res) => {
+      toast({
+        status: "success",
+        description: "",
+        title: "OTP sent, check your email",
+      });
+      setVerificationCode("");
+      setStep("verification");
+    },
+    onError: (err: any) => {
+      toast({
+        title: `${err?.response?.data?.message || "There was an error sending an OTP for authentication"}`,
+        description: "",
+        status: "error",
+      });
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (field: "next-of-kin" | "documents" | "success") => {
+      if (field === "next-of-kin")
+        await updateProfile({
+          first_name: aboutYou.firstName,
+          last_name: aboutYou.lastName,
+          date_of_birth: aboutYou.dateOfBirth?.split('/')?.reverse()?.join('-'),
+          marital_status: aboutYou.maritalStatus,
+          gender: aboutYou.gender,
+          highest_education: aboutYou.education,
+          profile_details: true
+        })
+
+      if (field === "documents")
+        await updateProfile({
+          first_name: nextOfKin?.firstName,
+          last_name: nextOfKin?.lastName,
+          email: nextOfKin?.email,
+          phone: nextOfKin?.phoneNumber,
+          relationship: nextOfKin?.relationship,
+          residential_address: nextOfKin?.residentialAddress,
+          next_of_kin: true
+        })
+
+      if (field === "success") {
+        const strip = stripDataUrlBase64Prefix;
+        await updateProfile({
+          document: [
+            {
+              document_type: "id_document",
+              document_name: documents.governmentId?.name,
+              id_number: null,
+              image: await encodeFileToBase64(documents.governmentId as File).then(strip),
+            },
+          ],
+          utility_bill: [
+            {
+              utility_bill_type: null,
+              document_name: documents?.utilityBill?.name,
+              utility_bill: await encodeFileToBase64(documents.utilityBill as File).then(strip),
+            },
+          ],
+          documents: true
+        })
+      }
+
+      return field
+    },
+    onSuccess: async (field) => {
+      setStep(field)
+      paymentMutation.mutate()
+    },
+    onError: (err: any) => {
+      toast({
+        title: `${err?.response?.data?.message || "There was an error updating data"}`,
+        description: "",
+        status: "error",
+      });
+    },
+  });
+
+  const paymentMutation = useMutation({
+    mutationFn: async () => {
+      const storename = store_name()
+      const businessId = business_id()
+      const objToSubmit = {
+        amount_to_pay: selectedPlan?.initial_deposit_in_value ? selectedPlan?.initial_deposit_in_value : selectedPlan?.price,
+        bundle_id: fetchedUnit.id,
+        business_id: businessId,
+        from_store: true,
+        payment_option: "virtual_bank",
+        paymentplan_id: selectedPlan?.initial_deposit_in_value ? selectedPlan?.id : undefined,
+        redirect_url: `https://${storename}.6787878.com`,
+        store_name: storename,
+        type: "WHOLE"
+      }
+
+      return makeEquityPayment(objToSubmit);
+    },
+    onSuccess: () => {
+      setSuccess(true)
+    },
+    onError: (err: any) => {
+      toast({
+        status: "error",
+        description: err?.response?.data?.message ?? err?.message ?? "Payment request failed.",
+        position: "top-right",
+      });
+    },
+  });
+
+  const docsSettingsMutation = useMutation({
+    mutationFn: () => getProfileData({ documents: true, }),
+    onSuccess: (res) => {
+      const { } = res?.data?.data;
+      setStep("about-you");
+    },
+  });
+
+  const nokSettingsMutation = useMutation({
+    mutationFn: () => getProfileData({ next_of_kin: true }),
+    onSuccess: (res) => {
+      const { first_name, last_name, phone, relationship, residential_address } = res?.data?.data;
+      setNextOfKin({
+        firstName: first_name,
+        lastName: last_name,
+        email: email,
+        countryCode: "+234",
+        phoneNumber: phone,
+        relationship: relationship,
+        residentialAddress: residential_address,
+      })
+
+      docsSettingsMutation.mutate()
+    },
+  });
+
+
+  const settingsMutation = useMutation({
+    mutationFn: () => getProfileData({ profile: true }),
+    onSuccess: (res) => {
+      const { first_name, last_name, date_of_birth, highest_education, marital_status, gender } = res?.data?.data;
+      setAboutYou({
+        firstName: first_name,
+        lastName: last_name,
+        dateOfBirth: date_of_birth?.split('-')?.reverse()?.join('/'),
+        maritalStatus: marital_status,
+        gender: gender,
+        education: highest_education
+      })
+      nokSettingsMutation.mutate()
+    },
+  });
+
+  const verifyCodeMutation = useMutation({
+    mutationFn: () => loginWithOTP({ email, code: verificationCode }),
+    onSuccess: (res) => {
+      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      setSession(res?.data?.token, TOKEN_SESSION_KEY, expires);
+
+      setTimeout(() => {
+        settingsMutation.mutate()
+      }, 1000);
+    },
+    onError: (err: any) => {
+      if (err?.response?.status === 404) {
+        setStep("about-you");
+      } else {
+        return toast({
+          description: `${err?.response?.data?.message || "There was an error authenticating this account. Please try again"}`,
+          status: "error",
+          duration: 5000,
+        });
+      }
+    },
+  });
+
   if (step === "payment-plan") {
     return (
       <aside className="sales-panel reservation-flow-panel">
         <PaymentPlanStep
-          price={price}
+          fetchedUnit={fetchedUnit}
+          paymentPlans={paymentPlans}
+          isLoading={paymentPlansQuery.isLoading}
           selectedPlanId={selectedPlanId}
           onSelect={selectPaymentPlan}
           onBack={() => setStep("overview")}
@@ -74,13 +287,11 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
       </aside>
     );
   }
-
   if (step === "payment-summary" && selectedPlan) {
     return (
       <aside className="sales-panel reservation-flow-panel">
         <PaymentSummaryStep
-          unitNumber={unitNumber}
-          price={price}
+          fetchedUnit={fetchedUnit}
           plan={selectedPlan}
           acceptedTerms={acceptedTerms}
           onAcceptedTermsChange={setAcceptedTerms}
@@ -92,7 +303,6 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
       </aside>
     );
   }
-
   if (step === "contact") {
     return (
       <aside className="sales-panel reservation-flow-panel">
@@ -103,17 +313,13 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
             if (nextEmail !== email) setVerificationCode("");
             setEmail(nextEmail);
           }}
+          loading={sendCodeMutation.isPending}
           onBack={() => setStep("payment-summary")}
-          onSendCode={() => {
-            setEmail(email.trim());
-            setVerificationCode("");
-            setStep("verification");
-          }}
+          onSendCode={() => sendCodeMutation.mutate()}
         />
       </aside>
     );
   }
-
   if (step === "verification") {
     return (
       <aside className="sales-panel reservation-flow-panel">
@@ -123,39 +329,37 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
           onCodeChange={setVerificationCode}
           onChangeAddress={() => setStep("contact")}
           onBack={() => setStep("contact")}
-          onResend={() => undefined}
+          onResend={() => sendCodeMutation.mutate()}
+          loading={verifyCodeMutation.isPending}
           onVerify={() => {
-            if (/^\d{6}$/.test(verificationCode)) setStep("about-you");
+            if (/^\d{6}$/.test(verificationCode))
+              verifyCodeMutation.mutate()
           }}
         />
       </aside>
     );
   }
-
   if (step === "about-you") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <AboutYouStep values={aboutYou} onChange={setAboutYou} onBack={() => setStep("verification")} onContinue={() => setStep("next-of-kin")} />
+        <AboutYouStep values={aboutYou} onChange={setAboutYou} onBack={() => setStep("verification")} loading={updateProfileMutation.isPending} onContinue={() => updateProfileMutation.mutate("next-of-kin")} />
       </aside>
     );
   }
-
   if (step === "next-of-kin") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <NextOfKinStep values={nextOfKin} onChange={setNextOfKin} onBack={() => setStep("about-you")} onContinue={() => setStep("documents")} />
+        <NextOfKinStep values={nextOfKin} onChange={setNextOfKin} onBack={() => setStep("about-you")} loading={updateProfileMutation.isPending} onContinue={() => updateProfileMutation.mutate("documents")} />
       </aside>
     );
   }
-
   if (step === "documents") {
     return (
       <aside className="sales-panel reservation-flow-panel">
-        <DocumentsStep files={documents} onChange={setDocuments} onBack={() => setStep("next-of-kin")} onProceed={() => setStep("success")} />
+        <DocumentsStep files={documents} onChange={setDocuments} onBack={() => setStep("next-of-kin")} loading={updateProfileMutation.isPending} onProceed={() => updateProfileMutation.mutate("success")} />
       </aside>
     );
   }
-
   if (step === "success" && selectedPlan) {
     return (
       <aside className="sales-panel reservation-flow-panel">
@@ -164,9 +368,9 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
           unitNumber={unitNumber}
           email={email}
           reservedBy={`${aboutYou.firstName} ${aboutYou.lastName}`.trim()}
-          price={price}
           plan={selectedPlan}
           onBackToUnit={returnToUnit}
+          success={success}
         />
       </aside>
     );
@@ -177,22 +381,22 @@ export function ReservationSidebar({ unitNumber, propertyName, price, bookingUrl
       <section className="reservation-block">
         <small>Your new home</small>
         <h2>
-          {bookingUrl ? "Reserve" : "Ask about"} unit {unitNumber} {bookingUrl ? "in your name" : "with our sales team"}
+          {available ? "Reserve" : "Ask about"} unit {unitNumber} {available ? "in your name" : "with our sales team"}
         </h2>
         <p>
-          {bookingUrl
+          {available
             ? "Tell us a few things about yourself, review the price and payment options, and decide from there."
             : "Get the full specification, payment schedule and current availability directly from our sales team."}
         </p>
-        {bookingUrl ? (
-          <button className="primary-button" type="button" onClick={() => setStep("payment-plan")}>
-            Reserve this unit <span aria-hidden="true">→</span>
-          </button>
-        ) : (
-          <a className="primary-button" href={salesEmail}>
+        {/* {available ? ( */}
+        <button className="primary-button" type="button" onClick={() => setStep("payment-plan")}>
+          Reserve this unit <span aria-hidden="true">→</span>
+        </button>
+        {/* ) : (
+          <a className="primary-button" href={salesEsmail}>
             Request information <span aria-hidden="true">→</span>
           </a>
-        )}
+        )} */}
       </section>
 
       <section className="sales-contact">

@@ -1,13 +1,15 @@
-import { formatCurrency, type PaymentPlan } from "../payment-plans";
+import { Center } from "@chakra-ui/react";
+import { formatToCurrencyNaira, type PaymentPlan } from "../payment-plans";
+import { Loader } from "@/components/ui/Loader";
 
 interface ReservationSuccessProps {
   propertyName: string;
   unitNumber: string;
   email: string;
   reservedBy: string;
-  price: number;
   plan: PaymentPlan;
   onBackToUnit(): void;
+  success: boolean
 }
 
 function reservationReference(propertyName: string, unitNumber: string, reservedBy: string) {
@@ -38,11 +40,14 @@ function inboxUrl(email: string) {
   return `mailto:${email}`;
 }
 
-export function ReservationSuccess({ propertyName, unitNumber, email, reservedBy, price, plan, onBackToUnit }: ReservationSuccessProps) {
-  const amountDue = (price * plan.initialPercentage) / 100;
+export function ReservationSuccess({ success, propertyName, unitNumber, email, reservedBy, plan, onBackToUnit }: ReservationSuccessProps) {
   const reference = reservationReference(propertyName, unitNumber, reservedBy);
 
-  return (
+  return !success ? (
+    <Center w='full' minH={'30vh'}>
+      <Loader />
+    </Center>
+  ) : (
     <div className="reservation-success">
       <div className="reservation-success-scroll">
         <span className="reservation-success-icon" aria-hidden="true">
@@ -65,7 +70,7 @@ export function ReservationSuccess({ propertyName, unitNumber, email, reservedBy
           <li>
             <span>2</span>
             <div>
-              <strong>Pay {formatCurrency(amountDue)}</strong>
+              <strong>Pay {formatToCurrencyNaira(plan?.initial_deposit_in_value ? plan?.initial_deposit_in_value : plan?.price)}</strong>
               <p>Card, transfer and the account details are in the email. The hold releases if payment is not received by then.</p>
             </div>
           </li>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReservationSidebar } from "@/components/reservation/ReservationSidebar";
 import { UnitWorkspace } from "@/components/units/UnitWorkspace";
-import { getApartments } from "@/lib/apartments";
+import { getApartments, getEsubDetails } from "@/lib/apartments";
 import { apartments as apartmentMetadata, assetRegistry, canOpenUnit, planRegistry } from "@/lib/data";
 import { formatArea, formatPrice } from "@/lib/format";
 
@@ -32,6 +32,8 @@ const salesData = [
 export default async function UnitPage({ params }: { params: Promise<{ unitNumber: string }> }) {
   const { unitNumber } = await params;
   const apartments = await getApartments();
+  const esubDetails = await getEsubDetails();
+
   const unit = apartments.find((apartment) => Number(apartment.number_num) === Number(unitNumber));
   if (!unit || !canOpenUnit(unit)) notFound();
 
@@ -128,10 +130,12 @@ export default async function UnitPage({ params }: { params: Promise<{ unitNumbe
       <UnitWorkspace unit={unit} asset={asset} apartments={planApartments} plans={unitPlans} />
 
       <ReservationSidebar
+        esubDetails={esubDetails}
+        unitId={unit?.unit}
         unitNumber={unit.number}
         propertyName={unit.house.name}
         price={Number(unit.discounted_price_raw || unit.price_raw || 0)}
-        bookingUrl={unit.booking_url}
+        available={!unit.allocated}
         salesEmail={salesEmail}
         salesSubject={salesSubject}
         contacts={salesData}

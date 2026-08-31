@@ -10,11 +10,12 @@ interface VerificationStepProps {
   onBack(): void;
   onResend(): void;
   onVerify(): void;
+  loading: boolean
 }
 
 const CODE_LENGTH = 6;
 
-export function VerificationStep({ email, code, onCodeChange, onChangeAddress, onBack, onResend, onVerify }: VerificationStepProps) {
+export function VerificationStep({ loading, email, code, onCodeChange, onChangeAddress, onBack, onResend, onVerify }: VerificationStepProps) {
   const inputs = useRef<Array<HTMLInputElement | null>>([]);
   const [resendSeconds, setResendSeconds] = useState(15);
   const digits = Array.from({ length: CODE_LENGTH }, (_, index) => (code[index] === " " ? "" : code[index] || ""));

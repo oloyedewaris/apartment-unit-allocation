@@ -1,19 +1,16 @@
-import { formatCurrency, type PaymentPlan } from "../payment-plans";
+import { formatCurrency, formatToCurrencyNaira, type PaymentPlan } from "../payment-plans";
 
 interface PaymentSummaryStepProps {
-  unitNumber: string;
-  price: number;
   plan: PaymentPlan;
   acceptedTerms: boolean;
   onAcceptedTermsChange(accepted: boolean): void;
   onBack(): void;
   onProceed(): void;
+  fetchedUnit: any
 }
 
-export function PaymentSummaryStep({ unitNumber, price, plan, acceptedTerms, onAcceptedTermsChange, onBack, onProceed }: PaymentSummaryStepProps) {
-  const amountDue = (price * plan.initialPercentage) / 100;
-  const balance = price - amountDue;
-  const monthlyInstallment = plan.months ? balance / plan.months : null;
+export function PaymentSummaryStep({ fetchedUnit, plan, acceptedTerms, onAcceptedTermsChange, onBack, onProceed }: PaymentSummaryStepProps) {
+  const isOutright = plan?.unit_title
 
   return (
     <div className="reservation-step">
@@ -28,35 +25,42 @@ export function PaymentSummaryStep({ unitNumber, price, plan, acceptedTerms, onA
           <h2>Payment summary</h2>
           <div className="payment-due-now">
             <small>You will pay now</small>
-            <strong>{formatCurrency(amountDue)}</strong>
+            <strong>{plan?.initial_deposit_in_value ? `${formatToCurrencyNaira(plan?.initial_deposit_in_value)}` : formatToCurrencyNaira(plan?.price)}</strong>
           </div>
         </section>
 
         <dl className="payment-summary-details">
           <div>
             <dt>Unit</dt>
-            <dd>Unit {unitNumber}</dd>
+            <dd>{fetchedUnit?.unit_title}</dd>
           </div>
           <div>
             <dt>Purchase price</dt>
-            <dd>{formatCurrency(price)}</dd>
+            <dd>{formatToCurrencyNaira(fetchedUnit?.price)}</dd>
           </div>
-          {plan.name !== "Outright payment" && (
+          {!isOutright && (
             <div>
               <dt>Plan</dt>
-              <dd>{plan.name}</dd>
+              <dd>{`${plan?.payment_period_in_months} Months`}</dd>
             </div>
           )}
-          {plan.name !== "Outright payment" && (
+          {!isOutright && (
             <div>
-              <dt>Balance</dt>
-              <dd>{formatCurrency(balance)}</dd>
+              <dt>Initial Deposit</dt>
+              <dd>{formatToCurrencyNaira(plan?.initial_deposit_in_value)}</dd>
             </div>
           )}
-          {plan.name !== "Outright payment" && (
+
+          {!isOutright && (
             <div>
-              <dt>Monthly installment</dt>
-              <dd>{monthlyInstallment && plan.months ? `${formatCurrency(monthlyInstallment)} × ${plan.months}` : "Not applicable"}</dd>
+              <dt>{plan?.payment_frequency
+                ? plan?.payment_frequency
+                  ?.charAt(0)
+                  .toUpperCase() +
+                plan?.payment_frequency?.slice(1) +
+                " Payment"
+                : "Periodic Payment"}</dt>
+              <dd> {formatToCurrencyNaira(plan?.periodic_payment)}</dd>
             </div>
           )}
         </dl>

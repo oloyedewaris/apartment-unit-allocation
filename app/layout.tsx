@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "./providers";
+import { getEsubDetails } from "@/lib/apartments";
 
 export const metadata: Metadata = {
   title: "Myxellia",
@@ -7,10 +9,14 @@ export const metadata: Metadata = {
   icons: { icon: "/assets/logo.svg" },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const esubDetails = await getEsubDetails();
+
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers esubDetails={esubDetails}>{children}</Providers>
+      </body>
     </html>
   );
 }

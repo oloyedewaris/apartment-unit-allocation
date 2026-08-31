@@ -2,8 +2,10 @@ import "server-only";
 
 import { apartments as apartmentMetadata } from "./data";
 import type { Apartment, ProjectAllocation } from "./types";
+import { BaseURL, LOCAL_ESUB_DOMAIN } from "./constants/auth-keys";
 
-const ALLOCATIONS_URL = "https://dev.matadortrust.com/v2/developers/project-allocations-with-owner/3211/";
+const ALLOCATIONS_URL = `${BaseURL}/developers/project-allocations-with-owner/3211/`;
+const storeCheckUrl = `${BaseURL}/billing/esub/domain/${encodeURIComponent(LOCAL_ESUB_DOMAIN)}/`;
 
 interface AllocationsResponse {
   data?: unknown;
@@ -59,4 +61,12 @@ export async function getApartments(): Promise<Apartment[]> {
   }
 
   return mergeApartmentAllocations(apartmentMetadata, payload.data);
+}
+
+export async function getEsubDetails(): Promise<any> {
+  const response = await fetch(storeCheckUrl, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Could not load apartment allocations (${response.status} ${response.statusText}).`);
+
+  const payload = (await response.json()) as any;
+  return payload;
 }

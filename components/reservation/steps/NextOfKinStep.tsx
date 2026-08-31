@@ -1,5 +1,6 @@
 export interface NextOfKinValues {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   countryCode: string;
   phoneNumber: string;
@@ -12,6 +13,7 @@ interface NextOfKinStepProps {
   onChange(values: NextOfKinValues): void;
   onBack(): void;
   onContinue(): void;
+  loading: boolean
 }
 
 const countryCodes = [
@@ -27,7 +29,7 @@ const countryCodes = [
   { code: "+86", country: "China" },
 ];
 
-const relationships = ["Spouse", "Partner", "Parent", "Child", "Sibling", "Guardian", "Relative", "Friend", "Colleague", "Other"];
+const relationships = ["Father", "Mother", "Brother", "Sister", "Partner"]
 
 function isValidEmail(email: string) {
   return !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
@@ -38,10 +40,11 @@ function isValidPhone(phoneNumber: string) {
   return digits.length >= 7 && digits.length <= 15;
 }
 
-export function NextOfKinStep({ values, onChange, onBack, onContinue }: NextOfKinStepProps) {
+export function NextOfKinStep({ loading, values, onChange, onBack, onContinue }: NextOfKinStepProps) {
   const update = <Key extends keyof NextOfKinValues>(key: Key, value: NextOfKinValues[Key]) => onChange({ ...values, [key]: value });
   const complete =
-    values.fullName.trim().length >= 2 &&
+    values.firstName.trim().length >= 2 &&
+    values.lastName.trim().length >= 2 &&
     isValidEmail(values.email) &&
     Boolean(values.countryCode) &&
     isValidPhone(values.phoneNumber) &&
@@ -72,9 +75,25 @@ export function NextOfKinStep({ values, onChange, onBack, onContinue }: NextOfKi
               name="nextOfKinName"
               type="text"
               autoComplete="name"
-              placeholder="First and last name"
-              value={values.fullName}
-              onChange={(event) => update("fullName", event.target.value)}
+              placeholder="First name"
+              value={values.firstName}
+              onChange={(event) => update("firstName", event.target.value)}
+              required
+            />
+          </div>
+
+          <div className="reservation-field">
+            <label htmlFor="next-of-kin-name">
+              Full name <span aria-hidden="true">*</span>
+            </label>
+            <input
+              id="next-of-kin-name"
+              name="nextOfKinName"
+              type="text"
+              autoComplete="name"
+              placeholder="Last name"
+              value={values.lastName}
+              onChange={(event) => update("lastName", event.target.value)}
               required
             />
           </div>
@@ -97,36 +116,36 @@ export function NextOfKinStep({ values, onChange, onBack, onContinue }: NextOfKi
             <label htmlFor="next-of-kin-phone">
               Phone number <span aria-hidden="true">*</span>
             </label>
-            <div className="phone-number-control">
-              <select value={values.countryCode} onChange={(event) => update("countryCode", event.target.value)} aria-label="Country calling code" required>
+            {/* <div className="phone-number-control"> */}
+            {/* <select value={values.countryCode} onChange={(event) => update("countryCode", event.target.value)} aria-label="Country calling code" required>
                 {countryCodes.map(({ code, country }) => (
                   <option key={`${country}-${code}`} value={code} title={country}>
                     {code}
                   </option>
                 ))}
-              </select>
-              <input
-                id="next-of-kin-phone"
-                name="nextOfKinPhone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel-national"
-                placeholder="817 281 0271"
-                value={values.phoneNumber}
-                onChange={(event) => update("phoneNumber", event.target.value.replace(/[^\d ()-]/g, ""))}
-                required
-              />
-            </div>
+              </select> */}
+            <input
+              id="next-of-kin-phone"
+              name="nextOfKinPhone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              placeholder="817 281 0271"
+              value={values.phoneNumber}
+              onChange={(event) => update("phoneNumber", event.target.value.replace(/[^\d ()-]/g, ""))}
+              required
+            />
+            {/* </div> */}
           </div>
 
           <div className="reservation-field">
             <label htmlFor="next-of-kin-relationship">
               Relationship <span aria-hidden="true">*</span>
             </label>
-            <select id="next-of-kin-relationship" value={values.relationship} onChange={(event) => update("relationship", event.target.value)} required>
+            <select id="next-of-kin-relationship" value={values.relationship?.toLowerCase()} onChange={(event) => update("relationship", event.target.value)} required>
               <option value="">Select</option>
               {relationships.map((relationship) => (
-                <option key={relationship} value={relationship}>
+                <option key={relationship} value={relationship?.toLowerCase()}>
                   {relationship}
                 </option>
               ))}
