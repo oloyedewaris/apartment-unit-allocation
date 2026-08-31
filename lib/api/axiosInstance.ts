@@ -11,7 +11,7 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const storeName = store_name();
     if (token) config.headers.Authorization = `Bearer ${token}`;
     if (storeName) config.headers["store-name"] = storeName;

@@ -2113,7 +2113,7 @@ a {
 .reservation-step-actions .continue-action[aria-busy="true"]:disabled {
     border-color: #14161a;
     background: #14161a;
-    cursor: wait
+    cursor: default
 }
 
 .reservation-button-loading {

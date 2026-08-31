@@ -1,4 +1,4 @@
-import { formatCurrency, formatToCurrencyNaira, type PaymentPlan } from "../payment-plans";
+import { formatToCurrencyNaira, type PaymentPlan } from "../payment-plans";
 
 interface PaymentSummaryStepProps {
   plan: PaymentPlan;
@@ -6,10 +6,11 @@ interface PaymentSummaryStepProps {
   onAcceptedTermsChange(accepted: boolean): void;
   onBack(): void;
   onProceed(): void;
-  fetchedUnit: any
+  fetchedUnit: any;
+  documentUrl?: string
 }
 
-export function PaymentSummaryStep({ fetchedUnit, plan, acceptedTerms, onAcceptedTermsChange, onBack, onProceed }: PaymentSummaryStepProps) {
+export function PaymentSummaryStep({ documentUrl, fetchedUnit, plan, acceptedTerms, onAcceptedTermsChange, onBack, onProceed }: PaymentSummaryStepProps) {
   const isOutright = plan?.unit_title
 
   return (
@@ -65,25 +66,25 @@ export function PaymentSummaryStep({ fetchedUnit, plan, acceptedTerms, onAccepte
           )}
         </dl>
 
-        <section className="payment-terms">
+        {documentUrl && <section className="payment-terms">
           <div className="payment-terms-link">
             <span>
               <span aria-hidden="true">□</span> Terms of agreement
             </span>
-            <a href="#payment-terms-acceptance">View</a>
+            <a href={`${documentUrl}`} target="_blank">View</a>
           </div>
           <label className="payment-terms-acceptance" id="payment-terms-acceptance">
             <input type="checkbox" checked={acceptedTerms} onChange={(event) => onAcceptedTermsChange(event.target.checked)} />
             <span>I have reviewed the terms of agreement, including the payment schedule and forfeiture conditions, and I accept them.</span>
           </label>
-        </section>
+        </section>}
       </div>
 
       <footer className="reservation-step-actions">
         <button type="button" className="secondary-action" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="continue-action" disabled={!acceptedTerms} onClick={onProceed}>
+        <button type="button" className="continue-action" disabled={documentUrl ? !acceptedTerms : false} onClick={onProceed}>
           Proceed <span aria-hidden="true">→</span>
         </button>
       </footer>

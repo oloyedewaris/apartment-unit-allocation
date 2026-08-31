@@ -33,7 +33,7 @@ export function formatToCurrencyNaira(amount: number | string | null | undefined
 }
 
 export const formatListingAmount = (amount: number | string | null | undefined, currencyValue?: string) => {
-  const localCurrency = localStorage.getItem("project-currency");
+  const localCurrency = sessionStorage.getItem("project-currency");
   const currency = localCurrency || currencyValue;
 
   if (!currency) return formatToCurrencyNaira(amount);

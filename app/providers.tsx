@@ -28,8 +28,8 @@ export function Providers({ children, esubDetails }: Readonly<ProvidersProps>) {
 
   useEffect(() => {
     if (!esubDetails) return;
-    window.localStorage.setItem('business_id', esubDetails?.business?.business_id);
-    window.localStorage.setItem('store_name', esubDetails?.store?.store_name);
+    window.sessionStorage.setItem('business_id', esubDetails?.business?.business_id);
+    window.sessionStorage.setItem('store_name', esubDetails?.store?.store_name);
   }, [esubDetails]);
 
   return (

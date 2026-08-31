@@ -11,7 +11,7 @@ import { PaymentSummaryStep } from "./steps/PaymentSummaryStep";
 import { ReservationSuccess } from "./steps/ReservationSuccess";
 import { VerificationStep } from "./steps/VerificationStep";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchBundlePaymentPlans, fetchProjectBundles, makeEquityPayment } from "@/lib/api/investment";
+import { fetchBundlePaymentPlans, fetchProjectBundles, fetchProjectDocumentsQuery, makeEquityPayment } from "@/lib/api/investment";
 import { PaymentPlan } from "./payment-plans";
 import { useToast } from "@chakra-ui/react";
 import { loginWithOTP, registerUser, requestOTPForEmailVerification } from "@/lib/api/auth";
@@ -95,14 +95,23 @@ export function ReservationSidebar({
     setDocuments({ governmentId: null, utilityBill: null });
   };
 
+  const docParam = !selectedPlan?.initial_deposit_in_value
+    ? `unit=${fetchedUnit?.id}&purpose=outright`
+    : `plan=${selectedPlan?.id}&purpose=paymentplan`;
+  const queryEnabled = !selectedPlan?.initial_deposit_in_value ? fetchedUnit?.id : selectedPlan?.id
+
+  const docQuery = useQuery({
+    queryKey: ["project-documents", docParam],
+    queryFn: () => fetchProjectDocumentsQuery(docParam),
+    enabled: !!queryEnabled,
+  });
+  const docResults = docQuery?.data?.data?.results
+  const documentUrl =
+    docResults?.[0]?.document_file ?? docResults?.[0]?.document_url ?? null;
+
   const sendCodeMutation = useMutation({
     mutationFn: () => requestOTPForEmailVerification({ email: email?.trim(), verify: true }),
     onSuccess: (res) => {
-      toast({
-        status: "success",
-        description: "",
-        title: "OTP sent, check your email",
-      });
       setVerificationCode("");
       setStep("verification");
     },
@@ -269,7 +278,7 @@ export function ReservationSidebar({
     mutationFn: () => loginWithOTP({ email, code: verificationCode }),
     onSuccess: (res) => {
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      localStorage.setItem('token', res?.data?.token);
+      sessionStorage.setItem('token', res?.data?.token);
 
       setTimeout(() => {
         settingsMutation.mutate()
@@ -315,8 +324,13 @@ export function ReservationSidebar({
           acceptedTerms={acceptedTerms}
           onAcceptedTermsChange={setAcceptedTerms}
           onBack={() => setStep("payment-plan")}
+          documentUrl={documentUrl}
           onProceed={() => {
-            if (acceptedTerms) setStep("contact");
+            if (documentUrl) {
+              if (acceptedTerms) setStep("contact");
+            } else {
+              setStep("contact");
+            }
           }}
         />
       </aside>

@@ -2,7 +2,7 @@
 
 import { STORE_DATA_KEY } from "./auth-keys";
 
-/** Normalized store data persisted in localStorage (subset used by e-sub flows). */
+/** Normalized store data persisted in sessionStorage (subset used by e-sub flows). */
 export interface StoreData {
   business_id: string;
   business_name: string;
@@ -18,7 +18,7 @@ export interface StoreData {
 export function getStoredStoreData(): StoreData | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(STORE_DATA_KEY);
+    const raw = sessionStorage.getItem(STORE_DATA_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StoreData;
     return parsed && typeof parsed.business_id === "string" ? parsed : null;

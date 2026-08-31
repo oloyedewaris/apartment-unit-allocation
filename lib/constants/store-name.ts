@@ -9,7 +9,7 @@ export function persistStoreName(storeName: string): void {
   const trimmed = storeName.trim();
   if (!trimmed || !appWindow) return;
   try {
-    appWindow.localStorage?.setItem(STORE_NAME_KEY, JSON.stringify(trimmed));
+    appWindow.sessionStorage?.setItem(STORE_NAME_KEY, JSON.stringify(trimmed));
   } catch {
     /* ignore */
   }
@@ -57,7 +57,7 @@ export function getStoreNameForWindow(win: Window): string {
   const hostname = win.location?.hostname ?? "";
   if (isLocalDevHost(hostname)) {
     try {
-      win.localStorage?.setItem(STORE_NAME_KEY, JSON.stringify(DEFAULT_STORE_NAME));
+      win.sessionStorage?.setItem(STORE_NAME_KEY, JSON.stringify(DEFAULT_STORE_NAME));
     } catch {
       /* ignore */
     }
@@ -71,7 +71,7 @@ export function getStoreNameForWindow(win: Window): string {
       const name = firstSegment.slice(prefix.length);
       if (name) {
         try {
-          win.localStorage?.setItem(STORE_NAME_KEY, JSON.stringify(name));
+          win.sessionStorage?.setItem(STORE_NAME_KEY, JSON.stringify(name));
         } catch {
           /* ignore */
         }
@@ -85,7 +85,7 @@ export function getStoreNameForWindow(win: Window): string {
       if (firstSegment === PREFIXES_DOT[i] && segments[1]) {
         const name = segments[1];
         try {
-          win.localStorage?.setItem(STORE_NAME_KEY, JSON.stringify(name));
+          win.sessionStorage?.setItem(STORE_NAME_KEY, JSON.stringify(name));
         } catch {
           /* ignore */
         }
@@ -94,7 +94,7 @@ export function getStoreNameForWindow(win: Window): string {
     }
   }
   try {
-    const stored = win.localStorage?.getItem(STORE_NAME_KEY);
+    const stored = win.sessionStorage?.getItem(STORE_NAME_KEY);
     if (stored) return JSON.parse(stored) as string;
   } catch {
     /* ignore */
@@ -116,5 +116,5 @@ export const store_name = (): string => {
 
 export const business_id = (): string => {
   if (!appWindow) return "";
-  return window.localStorage.getItem("business_id") || "";
+  return window.sessionStorage.getItem("business_id") || "";
 };
