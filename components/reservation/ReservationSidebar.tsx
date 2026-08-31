@@ -60,7 +60,6 @@ export function ReservationSidebar({
   const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(project?.id), enabled: !!project?.id });
   const allUnits = bundleQuery?.data?.data?.results
   const fetchedUnit = allUnits?.find((unit: any) => unit.id === unitId)
-  console.log('fetchedUnit', fetchedUnit)
 
   const paymentPlansQuery = useQuery({ queryKey: ["fetchBundlePaymentPlans"], queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id), enabled: !!fetchedUnit?.id });
   const fetchedPlans = paymentPlansQuery?.data?.data?.results as PaymentPlan[];
@@ -270,7 +269,7 @@ export function ReservationSidebar({
     mutationFn: () => loginWithOTP({ email, code: verificationCode }),
     onSuccess: (res) => {
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      setSession(res?.data?.token, TOKEN_SESSION_KEY, expires);
+      localStorage.setItem('token', res?.data?.token);
 
       setTimeout(() => {
         settingsMutation.mutate()
