@@ -293,8 +293,10 @@ export function ReservationSidebar({
     },
     onError: (err: any) => {
       if (err?.response?.status === 404) {
-        setStep("about-you");
         setNewUser(true)
+        setTimeout(() => {
+          setStep("about-you");
+        }, 1000);
       } else {
         return toast({
           description: `${err?.response?.data?.message || "There was an error authenticating this account. Please try again"}`,
