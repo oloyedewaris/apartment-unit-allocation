@@ -9,27 +9,8 @@ interface ReservationSuccessProps {
   reservedBy: string;
   plan: PaymentPlan;
   onBackToUnit(): void;
-  success: boolean
-}
-
-function reservationReference(propertyName: string, unitNumber: string, reservedBy: string) {
-  const propertyCode =
-    propertyName
-      .split(/\s+/)
-      .map((word) => word[0])
-      .join("")
-      .replace(/[^a-z]/gi, "")
-      .slice(0, 3)
-      .toUpperCase() || "MYX";
-  const customerCode =
-    reservedBy
-      .split(/\s+/)
-      .map((word) => word[0])
-      .join("")
-      .replace(/[^a-z]/gi, "")
-      .slice(0, 3)
-      .toUpperCase() || "RES";
-  return `${propertyCode}-${unitNumber}-${customerCode}`;
+  success: boolean;
+  loading: boolean
 }
 
 function inboxUrl(email: string) {
@@ -40,14 +21,12 @@ function inboxUrl(email: string) {
   return `mailto:${email}`;
 }
 
-export function ReservationSuccess({ success, propertyName, unitNumber, email, reservedBy, plan, onBackToUnit }: ReservationSuccessProps) {
-  const reference = reservationReference(propertyName, unitNumber, reservedBy);
-
-  return !success ? (
+export function ReservationSuccess({ loading, success, propertyName, unitNumber, email, reservedBy, plan, onBackToUnit }: ReservationSuccessProps) {
+  return loading ? (
     <Center w='full' minH={'90vh'}>
       <Loader />
     </Center>
-  ) : (
+  ) : success ? (
     <div className="reservation-success">
       <div className="reservation-success-scroll">
         <span className="reservation-success-icon" aria-hidden="true">
@@ -63,30 +42,25 @@ export function ReservationSuccess({ success, propertyName, unitNumber, email, r
           <li>
             <span>1</span>
             <div>
-              <strong>Open the reservation email</strong>
-              <p>It carries your reservation form, the signed terms and your reference.</p>
+              <strong>Open your offer email</strong>
+              <p>Review your offer, payment information, terms and reference.</p>
             </div>
           </li>
           <li>
             <span>2</span>
             <div>
-              <strong>Pay {formatToCurrencyNaira(plan?.initial_deposit_in_value ? plan?.initial_deposit_in_value : plan?.price)}</strong>
-              <p>Card, transfer and the account details are in the email. The hold releases if payment is not received by then.</p>
+              <strong>Complete payment</strong>
+              <p>Follow the payment instructions in your email within the 7-day offer period.</p>
             </div>
           </li>
           <li>
             <span>3</span>
             <div>
-              <strong>We confirm allocation</strong>
-              <p>Once payment clears, our sales team sends your allocation letter and the unit moves to sold in the map.</p>
+              <strong>We confirm your allocation</strong>
+              <p>Once payment is confirmed and the unit is still available, your allocation will be completed.</p>
             </div>
           </li>
         </ol>
-
-        <div className="reservation-reference">
-          <small>Reservation reference</small>
-          <strong>{reference}</strong>
-        </div>
       </div>
 
       <footer className="reservation-success-action">
@@ -100,5 +74,5 @@ export function ReservationSuccess({ success, propertyName, unitNumber, email, r
         </p>
       </footer>
     </div>
-  );
+  ) : null;
 }

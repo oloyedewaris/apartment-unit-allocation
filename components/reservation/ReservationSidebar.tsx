@@ -251,7 +251,7 @@ export function ReservationSidebar({
   const docsSettingsMutation = useMutation({
     mutationFn: () => getProfileData({ documents: true }),
     onSuccess: (res) => {
-      const {} = res?.data?.data;
+      const { } = res?.data?.data;
       setStep("about-you");
     },
   });
@@ -433,6 +433,7 @@ export function ReservationSidebar({
     return (
       <aside className="sales-panel reservation-flow-panel">
         <ReservationSuccess
+          loading={paymentMutation.isPending}
           propertyName={propertyName}
           unitNumber={unitNumber}
           email={email}
