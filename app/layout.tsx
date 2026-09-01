@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@/components/reservation/reservation.css";
 import { Providers } from "./providers";
 import { getEsubDetails } from "@/lib/apartments";
 

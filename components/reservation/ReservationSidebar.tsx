@@ -15,8 +15,6 @@ import { fetchBundlePaymentPlans, fetchProjectBundles, fetchProjectDocumentsQuer
 import { PaymentPlan } from "./payment-plans";
 import { useToast } from "@chakra-ui/react";
 import { loginWithOTP, registerUser, requestOTPForEmailVerification } from "@/lib/api/auth";
-import { ESUB_SESSION_KEY, TOKEN_SESSION_KEY } from "@/lib/constants/auth-keys";
-import { setSession } from "@/lib/session/sessionmanagers";
 import { getProfileData, updateProfile } from "@/lib/api/profile";
 import { encodeFileToBase64, stripDataUrlBase64Prefix } from "@/lib/constants/encode-base64";
 import { business_id, store_name } from "@/lib/constants/store-name";
