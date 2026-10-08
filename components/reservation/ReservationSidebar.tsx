@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 // import { paymentPlans } from "./payment-plans";
 import { AboutYouStep, type AboutYouValues } from "./steps/AboutYouStep";
 import { ContactStep } from "./steps/ContactStep";
@@ -64,7 +64,6 @@ export function ReservationSidebar({
   const bundleQuery = useQuery({ queryKey: ["fetchProjectBundles"], queryFn: () => fetchProjectBundles(project?.id), enabled: !!project?.id });
   const allUnits = bundleQuery?.data?.data?.results;
   const fetchedUnit = allUnits?.find((unit: any) => unit.id === unitId);
-
   const paymentPlansQuery = useQuery({
     queryKey: ["fetchBundlePaymentPlans"],
     queryFn: () => fetchBundlePaymentPlans(fetchedUnit?.id),
@@ -77,13 +76,6 @@ export function ReservationSidebar({
   const [step, setStep] = useState<
     "overview" | "payment-plan" | "payment-summary" | "contact" | "verification" | "about-you" | "next-of-kin" | "documents" | "success"
   >("overview");
-
-  useEffect(() => {
-    const reservationActive = step !== "overview";
-    document.body.classList.toggle("reservation-flow-active", reservationActive);
-
-    return () => document.body.classList.remove("reservation-flow-active");
-  }, [step]);
 
   const [success, setSuccess] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -99,7 +91,7 @@ export function ReservationSidebar({
     setSelectedPlanId(planId);
   };
   const [newUser, setNewUser] = useState(false);
-  const returnToUnit = () => {
+  const returnToUnit = useCallback(() => {
     setStep("overview");
     setSelectedPlanId(null);
     setAcceptedTerms(false);
@@ -108,7 +100,44 @@ export function ReservationSidebar({
     setAboutYou(emptyAboutYou);
     setNextOfKin(emptyNextOfKin);
     setDocuments({ governmentId: null, utilityBill: null });
-  };
+  }, []);
+  const reservationActive = step !== "overview";
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    document.body.classList.toggle("reservation-flow-active", reservationActive);
+    if (!reservationActive) return () => document.body.classList.remove("reservation-flow-active");
+
+    const isMobileDrawer = window.matchMedia("(max-width: 700px)").matches;
+    const previouslyFocused = isMobileDrawer && document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const focusFrame = isMobileDrawer ? window.requestAnimationFrame(() => drawerCloseRef.current?.focus()) : null;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") returnToUnit();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      if (focusFrame !== null) window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.classList.remove("reservation-flow-active");
+      previouslyFocused?.focus();
+    };
+  }, [reservationActive, returnToUnit]);
+
+  const renderFlow = (content: ReactNode) => (
+    <>
+      <button className="reservation-drawer-backdrop" type="button" aria-label="Close reservation" onClick={returnToUnit} />
+      <aside className="sales-panel reservation-flow-panel is-open" role="dialog" aria-label={`Reserve unit ${unitNumber}`}>
+        <div className="reservation-drawer-chrome">
+          <span aria-hidden="true" />
+          <button ref={drawerCloseRef} type="button" aria-label="Close reservation" onClick={returnToUnit}>
+            ×
+          </button>
+        </div>
+        {content}
+      </aside>
+    </>
+  );
 
   const docParam = !selectedPlan?.initial_deposit_in_value ? `unit=${fetchedUnit?.id}&purpose=outright` : `plan=${selectedPlan?.id}&purpose=paymentplan`;
   const queryEnabled = !selectedPlan?.initial_deposit_in_value ? fetchedUnit?.id : selectedPlan?.id;
@@ -316,131 +345,115 @@ export function ReservationSidebar({
   });
 
   if (step === "payment-plan") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <PaymentPlanStep
-          fetchedUnit={fetchedUnit}
-          paymentPlans={paymentPlans}
-          isLoading={paymentPlansQuery.isLoading}
-          selectedPlanId={selectedPlanId}
-          onSelect={selectPaymentPlan}
-          onBack={() => setStep("overview")}
-          onContinue={() => {
-            if (selectedPlanId) setStep("payment-summary");
-          }}
-        />
-      </aside>
+    return renderFlow(
+      <PaymentPlanStep
+        fetchedUnit={fetchedUnit}
+        paymentPlans={paymentPlans}
+        isLoading={paymentPlansQuery.isLoading}
+        selectedPlanId={selectedPlanId}
+        onSelect={selectPaymentPlan}
+        onBack={() => setStep("overview")}
+        onContinue={() => {
+          if (selectedPlanId) setStep("payment-summary");
+        }}
+      />,
     );
   }
   if (step === "payment-summary" && selectedPlan) {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <PaymentSummaryStep
-          fetchedUnit={fetchedUnit}
-          plan={selectedPlan}
-          acceptedTerms={acceptedTerms}
-          onAcceptedTermsChange={setAcceptedTerms}
-          onBack={() => setStep("payment-plan")}
-          documentUrl={documentUrl}
-          onProceed={() => {
-            if (documentUrl) {
-              if (acceptedTerms) setStep("contact");
-            } else {
-              setStep("contact");
-            }
-          }}
-        />
-      </aside>
+    return renderFlow(
+      <PaymentSummaryStep
+        fetchedUnit={fetchedUnit}
+        plan={selectedPlan}
+        acceptedTerms={acceptedTerms}
+        onAcceptedTermsChange={setAcceptedTerms}
+        onBack={() => setStep("payment-plan")}
+        documentUrl={documentUrl}
+        onProceed={() => {
+          if (documentUrl) {
+            if (acceptedTerms) setStep("contact");
+          } else {
+            setStep("contact");
+          }
+        }}
+      />,
     );
   }
   if (step === "contact") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <ContactStep
-          unitNumber={unitNumber}
-          email={email}
-          onEmailChange={(nextEmail) => {
-            if (nextEmail !== email) setVerificationCode("");
-            setEmail(nextEmail);
-          }}
-          loading={sendCodeMutation.isPending}
-          onBack={() => setStep("payment-summary")}
-          onSendCode={() => sendCodeMutation.mutate()}
-        />
-      </aside>
+    return renderFlow(
+      <ContactStep
+        unitNumber={unitNumber}
+        email={email}
+        onEmailChange={(nextEmail) => {
+          if (nextEmail !== email) setVerificationCode("");
+          setEmail(nextEmail);
+        }}
+        loading={sendCodeMutation.isPending}
+        onBack={() => setStep("payment-summary")}
+        onSendCode={() => sendCodeMutation.mutate()}
+      />,
     );
   }
   if (step === "verification") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <VerificationStep
-          email={email}
-          code={verificationCode}
-          onCodeChange={setVerificationCode}
-          onChangeAddress={() => setStep("contact")}
-          onBack={() => setStep("contact")}
-          onResend={() => sendCodeMutation.mutate()}
-          loading={verifyCodeMutation.isPending || settingsMutation.isPending || nokSettingsMutation.isPending || docsSettingsMutation.isPending}
-          onVerify={() => {
-            if (/^\d{6}$/.test(verificationCode)) verifyCodeMutation.mutate();
-          }}
-        />
-      </aside>
+    return renderFlow(
+      <VerificationStep
+        email={email}
+        code={verificationCode}
+        onCodeChange={setVerificationCode}
+        onChangeAddress={() => setStep("contact")}
+        onBack={() => setStep("contact")}
+        onResend={() => sendCodeMutation.mutate()}
+        loading={verifyCodeMutation.isPending || settingsMutation.isPending || nokSettingsMutation.isPending || docsSettingsMutation.isPending}
+        onVerify={() => {
+          if (/^\d{6}$/.test(verificationCode)) verifyCodeMutation.mutate();
+        }}
+      />,
     );
   }
   if (step === "about-you") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <AboutYouStep
-          values={aboutYou}
-          onChange={setAboutYou}
-          onBack={() => setStep("verification")}
-          loading={updateProfileMutation.isPending}
-          onContinue={() => updateProfileMutation.mutate("next-of-kin")}
-        />
-      </aside>
+    return renderFlow(
+      <AboutYouStep
+        values={aboutYou}
+        onChange={setAboutYou}
+        onBack={() => setStep("verification")}
+        loading={updateProfileMutation.isPending}
+        onContinue={() => updateProfileMutation.mutate("next-of-kin")}
+      />,
     );
   }
   if (step === "next-of-kin") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <NextOfKinStep
-          values={nextOfKin}
-          onChange={setNextOfKin}
-          onBack={() => setStep("about-you")}
-          loading={updateProfileMutation.isPending}
-          onContinue={() => updateProfileMutation.mutate("documents")}
-        />
-      </aside>
+    return renderFlow(
+      <NextOfKinStep
+        values={nextOfKin}
+        onChange={setNextOfKin}
+        onBack={() => setStep("about-you")}
+        loading={updateProfileMutation.isPending}
+        onContinue={() => updateProfileMutation.mutate("documents")}
+      />,
     );
   }
   if (step === "documents") {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <DocumentsStep
-          files={documents}
-          onChange={setDocuments}
-          onBack={() => setStep("next-of-kin")}
-          loading={updateProfileMutation.isPending}
-          onProceed={() => updateProfileMutation.mutate("success")}
-        />
-      </aside>
+    return renderFlow(
+      <DocumentsStep
+        files={documents}
+        onChange={setDocuments}
+        onBack={() => setStep("next-of-kin")}
+        loading={updateProfileMutation.isPending}
+        onProceed={() => updateProfileMutation.mutate("success")}
+      />,
     );
   }
   if (step === "success" && selectedPlan) {
-    return (
-      <aside className="sales-panel reservation-flow-panel">
-        <ReservationSuccess
-          loading={paymentMutation.isPending}
-          propertyName={propertyName}
-          unitNumber={unitNumber}
-          email={email}
-          reservedBy={`${aboutYou.firstName} ${aboutYou.lastName}`.trim()}
-          plan={selectedPlan}
-          onBackToUnit={returnToUnit}
-          success={success}
-        />
-      </aside>
+    return renderFlow(
+      <ReservationSuccess
+        loading={paymentMutation.isPending}
+        propertyName={propertyName}
+        unitNumber={unitNumber}
+        email={email}
+        reservedBy={`${aboutYou.firstName} ${aboutYou.lastName}`.trim()}
+        plan={selectedPlan}
+        onBackToUnit={returnToUnit}
+        success={success}
+      />,
     );
   }
 

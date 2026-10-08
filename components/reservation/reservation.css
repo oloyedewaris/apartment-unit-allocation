@@ -145,6 +145,11 @@
   overflow: hidden;
 }
 
+.reservation-drawer-backdrop,
+.reservation-drawer-chrome {
+  display: none;
+}
+
 .reservation-step {
   height: 100%;
   display: grid;
@@ -1083,12 +1088,113 @@
 }
 
 @media (max-width: 700px) {
+  body.reservation-flow-active {
+    overflow: hidden;
+  }
+
   .sales-panel {
     display: block;
+  }
+
+  .sales-panel.reservation-flow-panel {
+    position: fixed;
+    z-index: 101;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: min(90dvh, 820px);
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -18px 50px rgb(20 22 26 / 22%);
+    animation: reservation-drawer-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reservation-flow-panel > .reservation-step,
+  .reservation-flow-panel > .reservation-success {
+    min-height: 0;
+    height: auto;
+    flex: 1 1 auto;
+  }
+
+  .reservation-drawer-backdrop {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: rgb(20 22 26 / 48%);
+    cursor: default;
+    animation: reservation-backdrop-in 220ms ease-out;
+  }
+
+  .reservation-drawer-chrome {
+    position: relative;
+    min-height: 32px;
+    display: flex;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+
+  .reservation-drawer-chrome > span {
+    width: 42px;
+    height: 4px;
+    border-radius: 99px;
+    background: #d5d4d1;
+  }
+
+  .reservation-drawer-chrome > button {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #6b7178;
+    font:
+      300 24px/1 Arial,
+      sans-serif;
+    cursor: pointer;
   }
 
   .sales-contact {
     border-top: 1px solid #e6e5e2;
     border-left: 0;
+  }
+}
+
+@keyframes reservation-drawer-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes reservation-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sales-panel.reservation-flow-panel,
+  .reservation-drawer-backdrop {
+    animation: none;
   }
 }

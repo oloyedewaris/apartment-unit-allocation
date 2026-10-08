@@ -1228,37 +1228,6 @@ a {
     }
 
     .filter-sidebar {
-        position: fixed;
-        z-index: 20;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        height: 235px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        overflow: hidden
-    }
-
-    .filter-sidebar>header,
-    .sidebar-credit {
-        display: none
-    }
-
-    .filter-content {
-        height: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px 12px;
-        padding: 12px
-    }
-
-    .filter-content section,
-    .filter-range {
-        margin: 0
-    }
-
-    .filter-range:nth-of-type(n+3),
-    .clear-filters {
         display: none
     }
 
@@ -1274,17 +1243,9 @@ a {
         min-width: 96px
     }
 
-    .building-hint {
-        bottom: 260px
-    }
-
-    .explorer-center .plan-controls {
-        bottom: 250px
-    }
-
     .explorer-center>.floor-plan-viewer {
         padding-inline: 22px;
-        padding-bottom: 315px
+        padding-bottom: 96px
     }
 }
 
@@ -1805,16 +1766,8 @@ a {
 }
 
 @media(max-width:700px) {
-    .unit-brandbar {
-        height: 62px !important
-    }
-
-    .unit-summary {
-        display: block
-    }
-
-    .unit-heading {
-        border-right: 0
+    .unit-details {
+        display: none
     }
 
     .unit-workspace {
