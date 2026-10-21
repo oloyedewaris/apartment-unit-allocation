@@ -40,13 +40,14 @@ export function mergeApartmentAllocations(metadata: Apartment[], allocations: Pr
     const allocation = allocationsByUnitName.get(unit.number);
 
     if (!allocation) {
-      throw new Error(`No backend allocation matched local unit number "${unit.number}".`);
+      console.log(unit.number);
+      // throw new Error(`No backend allocation matched local unit number "${unit.number}".`);
     }
 
     return {
       ...unit,
-      ...allocation,
-      status: allocation.allocated ? "sold" : "available",
+      // ...allocation,
+      status: allocation?.allocated ? "sold" : "available",
     };
   });
 }
@@ -59,6 +60,8 @@ export async function getApartments(): Promise<Apartment[]> {
   if (!Array.isArray(payload.data) || !payload.data.every(isProjectAllocation)) {
     throw new Error("The apartment allocations response has an unexpected format.");
   }
+  console.log("apartmentMetadata", apartmentMetadata);
+  console.log("payload.data", payload.data);
 
   return mergeApartmentAllocations(apartmentMetadata, payload.data);
 }
