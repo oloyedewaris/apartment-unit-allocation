@@ -4,7 +4,7 @@ import { apartments as apartmentMetadata } from "./data";
 import type { Apartment, ProjectAllocation } from "./types";
 import { BaseURL, LOCAL_ESUB_DOMAIN } from "./constants/auth-keys";
 
-const ALLOCATIONS_URL = `${BaseURL}/developers/project-allocations-with-owner/3430/`;
+const ALLOCATIONS_URL = `${BaseURL}/developers/project-allocations-with-owner/3457/`;
 const storeCheckUrl = `${BaseURL}/billing/esub/domain/${encodeURIComponent(LOCAL_ESUB_DOMAIN)}/`;
 
 interface AllocationsResponse {
@@ -37,21 +37,10 @@ export function mergeApartmentAllocations(metadata: Apartment[], allocations: Pr
   }
 
   return metadata.map((unit) => {
-    let allocation = allocationsByUnitName.get(unit.number);
+    const allocation = allocationsByUnitName.get(unit.number);
 
     if (!allocation) {
-      allocation = {
-        allocated: true,
-        id: Math.floor(Math.random() * 10),
-        name: "string",
-        unit: 2,
-        unit_name: "string",
-        generating_revenue: false,
-        archived: false,
-        owner: "",
-      };
-      // console.log(unit.number);
-      // throw new Error(`No backend allocation matched local unit number "${unit.number}".`);
+      throw new Error(`No backend allocation matched local unit number "${unit.number}".`);
     }
 
     return {
